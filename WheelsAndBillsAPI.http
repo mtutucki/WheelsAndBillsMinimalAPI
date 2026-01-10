@@ -1,0 +1,6 @@
+@WheelsAndBillsAPI_HostAddress = http://localhost:5253
+
+GET {{WheelsAndBillsAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
