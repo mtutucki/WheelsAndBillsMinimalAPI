@@ -1,5 +1,5 @@
-﻿using WheelsAndBillsAPI.Domain.Entitiess.Vehicles;
-using WheelsAndBills.Domain.Entities.Auth;
+﻿using WheelsAndBills.Domain.Entities.Auth;
+using WheelsAndBillsAPI.Domain.Entities.Vehicles;
 
 namespace WheelsAndBillsAPI.Domain.Entities.Notification
 {

@@ -1,4 +1,5 @@
-﻿using Domain.Entities.Events;
+﻿
+using WheelsAndBillsAPI.Domain.Entities.Events;
 
 namespace WheelsAndBillsAPI.Domain.Entities.Cost
 {

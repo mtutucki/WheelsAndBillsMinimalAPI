@@ -1,4 +1,4 @@
-﻿using Domain.Entities.Vehicles;
+﻿using WheelsAndBillsAPI.Domain.Entities.Vehicles;
 
 namespace WheelsAndBillsAPI.Domain.Entities.Cost
 {

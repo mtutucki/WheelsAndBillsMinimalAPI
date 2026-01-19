@@ -1,4 +1,4 @@
-﻿using WheelsAndBillsAPI.Domain.Entitiess.Vehicles;
+﻿using WheelsAndBillsAPI.Domain.Entities.Vehicles;
 
 namespace WheelsAndBillsAPI.Domain.Entities.Events
 {

@@ -1,6 +1,6 @@
-﻿using Domain.Entities.Report;
-using Domain.Entities.Vehicles;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
+using WheelsAndBillsAPI.Domain.Entities.Report;
+using WheelsAndBillsAPI.Domain.Entities.Vehicles;
 
 namespace WheelsAndBills.Domain.Entities.Auth
 {
