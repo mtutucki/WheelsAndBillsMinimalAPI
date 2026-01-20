@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WheelsAndBillsAPI.Persistence;
 
@@ -11,9 +12,11 @@ using WheelsAndBillsAPI.Persistence;
 namespace WheelsAndBillsAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260119213734_add-event")]
+    partial class addevent
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -278,80 +281,6 @@ namespace WheelsAndBillsAPI.Migrations
                     b.ToTable("ContentPage");
                 });
 
-            modelBuilder.Entity("WheelsAndBillsAPI.Domain.Entities.Admin.Dictionary", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Dictionaries");
-                });
-
-            modelBuilder.Entity("WheelsAndBillsAPI.Domain.Entities.Admin.DictionaryItem", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("DictionaryId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("DictionaryItems");
-                });
-
-            modelBuilder.Entity("WheelsAndBillsAPI.Domain.Entities.Admin.FileResource", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("FileName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FilePath")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("UploadedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("FileResources");
-                });
-
-            modelBuilder.Entity("WheelsAndBillsAPI.Domain.Entities.Admin.SystemSetting", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Key")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SystemSettings");
-                });
-
             modelBuilder.Entity("WheelsAndBillsAPI.Domain.Entities.Cost.Cost", b =>
                 {
                     b.Property<Guid>("Id")
@@ -374,7 +303,7 @@ namespace WheelsAndBillsAPI.Migrations
 
                     b.HasIndex("VehicleEventId");
 
-                    b.ToTable("Costs");
+                    b.ToTable("Cost");
                 });
 
             modelBuilder.Entity("WheelsAndBillsAPI.Domain.Entities.Cost.CostType", b =>
@@ -389,32 +318,7 @@ namespace WheelsAndBillsAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CostTypes");
-                });
-
-            modelBuilder.Entity("WheelsAndBillsAPI.Domain.Entities.Cost.RecurringCost", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<Guid>("CostTypeId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("IntervalMonths")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("VehicleId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("VehicleId");
-
-                    b.ToTable("RecurringCosts");
+                    b.ToTable("CostType");
                 });
 
             modelBuilder.Entity("WheelsAndBillsAPI.Domain.Entities.Events.EventPart", b =>
@@ -433,7 +337,7 @@ namespace WheelsAndBillsAPI.Migrations
 
                     b.HasIndex("PartId");
 
-                    b.ToTable("EventParts");
+                    b.ToTable("EventPart");
                 });
 
             modelBuilder.Entity("WheelsAndBillsAPI.Domain.Entities.Events.EventType", b =>
@@ -442,35 +346,13 @@ namespace WheelsAndBillsAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Code")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("EventTypes");
-                });
-
-            modelBuilder.Entity("WheelsAndBillsAPI.Domain.Entities.Events.FuelingEvent", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("Liters")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("TotalPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<Guid>("VehicleEventId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("VehicleEventId");
-
-                    b.ToTable("FuelingEvents");
+                    b.ToTable("EventType");
                 });
 
             modelBuilder.Entity("WheelsAndBillsAPI.Domain.Entities.Events.Part", b =>
@@ -485,7 +367,7 @@ namespace WheelsAndBillsAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Parts");
+                    b.ToTable("Part");
                 });
 
             modelBuilder.Entity("WheelsAndBillsAPI.Domain.Entities.Events.RepairEvent", b =>
@@ -506,28 +388,7 @@ namespace WheelsAndBillsAPI.Migrations
                     b.HasIndex("VehicleEventId")
                         .IsUnique();
 
-                    b.ToTable("RepairEvents");
-                });
-
-            modelBuilder.Entity("WheelsAndBillsAPI.Domain.Entities.Events.ServiceEvent", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("VehicleEventId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("WorkshopId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("VehicleEventId");
-
-                    b.HasIndex("WorkshopId");
-
-                    b.ToTable("ServiceEvents");
+                    b.ToTable("RepairEvent");
                 });
 
             modelBuilder.Entity("WheelsAndBillsAPI.Domain.Entities.Events.VehicleEvent", b =>
@@ -558,21 +419,6 @@ namespace WheelsAndBillsAPI.Migrations
                     b.HasIndex("VehicleId");
 
                     b.ToTable("VehicleEvents");
-                });
-
-            modelBuilder.Entity("WheelsAndBillsAPI.Domain.Entities.Events.Workshop", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Workshops");
                 });
 
             modelBuilder.Entity("WheelsAndBillsAPI.Domain.Entities.Notification.Notification", b =>
@@ -609,42 +455,7 @@ namespace WheelsAndBillsAPI.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("Notifications");
-                });
-
-            modelBuilder.Entity("WheelsAndBillsAPI.Domain.Entities.Notification.NotificationType", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("NotificationTypes");
-                });
-
-            modelBuilder.Entity("WheelsAndBillsAPI.Domain.Entities.Report.GeneratedReport", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("FilePath")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("ReportId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ReportId");
-
-                    b.ToTable("GeneratedReports");
+                    b.ToTable("Notification");
                 });
 
             modelBuilder.Entity("WheelsAndBillsAPI.Domain.Entities.Report.Report", b =>
@@ -683,31 +494,7 @@ namespace WheelsAndBillsAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ReportDefinitions");
-                });
-
-            modelBuilder.Entity("WheelsAndBillsAPI.Domain.Entities.Report.ReportParameter", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("ReportId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ReportId");
-
-                    b.ToTable("ReportParameters");
+                    b.ToTable("ReportDefinition");
                 });
 
             modelBuilder.Entity("WheelsAndBillsAPI.Domain.Entities.Vehicles.Vehicle", b =>
@@ -769,7 +556,7 @@ namespace WheelsAndBillsAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("VehicleBrands");
+                    b.ToTable("VehicleBrand");
                 });
 
             modelBuilder.Entity("WheelsAndBillsAPI.Domain.Entities.Vehicles.VehicleMileage", b =>
@@ -811,7 +598,7 @@ namespace WheelsAndBillsAPI.Migrations
 
                     b.HasIndex("BrandId");
 
-                    b.ToTable("VehicleModels");
+                    b.ToTable("VehicleModel");
                 });
 
             modelBuilder.Entity("WheelsAndBillsAPI.Domain.Entities.Vehicles.VehicleNote", b =>
@@ -855,7 +642,7 @@ namespace WheelsAndBillsAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("VehicleStatuses");
+                    b.ToTable("VehicleStatus");
                 });
 
             modelBuilder.Entity("WheelsAndBillsAPI.Domain.Entities.Vehicles.VehicleType", b =>
@@ -870,7 +657,7 @@ namespace WheelsAndBillsAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("VehicleTypes");
+                    b.ToTable("VehicleType");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -952,17 +739,6 @@ namespace WheelsAndBillsAPI.Migrations
                     b.Navigation("VehicleEvent");
                 });
 
-            modelBuilder.Entity("WheelsAndBillsAPI.Domain.Entities.Cost.RecurringCost", b =>
-                {
-                    b.HasOne("WheelsAndBillsAPI.Domain.Entities.Vehicles.Vehicle", "Vehicle")
-                        .WithMany()
-                        .HasForeignKey("VehicleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Vehicle");
-                });
-
             modelBuilder.Entity("WheelsAndBillsAPI.Domain.Entities.Events.EventPart", b =>
                 {
                     b.HasOne("WheelsAndBillsAPI.Domain.Entities.Events.Part", "Part")
@@ -982,17 +758,6 @@ namespace WheelsAndBillsAPI.Migrations
                     b.Navigation("RepairEvent");
                 });
 
-            modelBuilder.Entity("WheelsAndBillsAPI.Domain.Entities.Events.FuelingEvent", b =>
-                {
-                    b.HasOne("WheelsAndBillsAPI.Domain.Entities.Events.VehicleEvent", "VehicleEvent")
-                        .WithMany()
-                        .HasForeignKey("VehicleEventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("VehicleEvent");
-                });
-
             modelBuilder.Entity("WheelsAndBillsAPI.Domain.Entities.Events.RepairEvent", b =>
                 {
                     b.HasOne("WheelsAndBillsAPI.Domain.Entities.Events.VehicleEvent", "VehicleEvent")
@@ -1002,25 +767,6 @@ namespace WheelsAndBillsAPI.Migrations
                         .IsRequired();
 
                     b.Navigation("VehicleEvent");
-                });
-
-            modelBuilder.Entity("WheelsAndBillsAPI.Domain.Entities.Events.ServiceEvent", b =>
-                {
-                    b.HasOne("WheelsAndBillsAPI.Domain.Entities.Events.VehicleEvent", "VehicleEvent")
-                        .WithMany()
-                        .HasForeignKey("VehicleEventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WheelsAndBillsAPI.Domain.Entities.Events.Workshop", "Workshop")
-                        .WithMany()
-                        .HasForeignKey("WorkshopId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("VehicleEvent");
-
-                    b.Navigation("Workshop");
                 });
 
             modelBuilder.Entity("WheelsAndBillsAPI.Domain.Entities.Events.VehicleEvent", b =>
@@ -1061,17 +807,6 @@ namespace WheelsAndBillsAPI.Migrations
                     b.Navigation("Vehicle");
                 });
 
-            modelBuilder.Entity("WheelsAndBillsAPI.Domain.Entities.Report.GeneratedReport", b =>
-                {
-                    b.HasOne("WheelsAndBillsAPI.Domain.Entities.Report.Report", "Report")
-                        .WithMany()
-                        .HasForeignKey("ReportId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Report");
-                });
-
             modelBuilder.Entity("WheelsAndBillsAPI.Domain.Entities.Report.Report", b =>
                 {
                     b.HasOne("WheelsAndBillsAPI.Domain.Entities.Report.ReportDefinition", "Definition")
@@ -1089,17 +824,6 @@ namespace WheelsAndBillsAPI.Migrations
                     b.Navigation("Definition");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("WheelsAndBillsAPI.Domain.Entities.Report.ReportParameter", b =>
-                {
-                    b.HasOne("WheelsAndBillsAPI.Domain.Entities.Report.Report", "Report")
-                        .WithMany()
-                        .HasForeignKey("ReportId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Report");
                 });
 
             modelBuilder.Entity("WheelsAndBillsAPI.Domain.Entities.Vehicles.Vehicle", b =>

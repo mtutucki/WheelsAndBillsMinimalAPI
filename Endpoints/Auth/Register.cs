@@ -1,13 +1,14 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using WheelsAndBills.Domain.Entities.Auth;
+using WheelsAndBillsAPI.Endpoints.Auth.DTO;
 
 namespace WheelsAndBillsAPI.Endpoints.Auth
 {
     public static class RegisterEndpoint
     {
-        public static IEndpointRouteBuilder MapRegister(this IEndpointRouteBuilder app)
+        public static RouteHandlerBuilder MapRegister(this RouteGroupBuilder app)
         {
-            app.MapPost("/auth/register", async (
+            return app.MapPost("/register", async (
                 RegisterRequest request,
                 UserManager<ApplicationUser> userManager) =>
             {
@@ -32,14 +33,6 @@ namespace WheelsAndBillsAPI.Endpoints.Auth
                     user.Email
                 });
             });
-
-            return app;
         }
-
-        public record RegisterRequest(
-            string Email,
-            string Password,
-            string FirstName,
-            string LastName);
     }
 }

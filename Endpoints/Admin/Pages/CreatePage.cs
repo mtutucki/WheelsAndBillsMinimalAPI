@@ -1,15 +1,16 @@
 ﻿using WheelsAndBillsAPI.Persistence;
 using WheelsAndBillsAPI.Domain.Entities.Admin;
 using Microsoft.EntityFrameworkCore;
+using WheelsAndBillsAPI.Endpoints.Admin.DTO;
 
 namespace WheelsAndBillsAPI.Endpoints.Admin.Pages
 {
     public static class CreatePage
     {
-        public static IEndpointRouteBuilder MapCreatePage(this IEndpointRouteBuilder app)
+        public static RouteHandlerBuilder MapCreatePage(this RouteGroupBuilder app)
         {
-            app.MapPost("/admin/pages", async (
-                CreatePageRequest request,
+            return app.MapPost("/pages", async (
+                CreatePageDTO request,
                 AppDbContext db) =>
             {
                 string slug = request.Slug;
@@ -35,10 +36,6 @@ namespace WheelsAndBillsAPI.Endpoints.Admin.Pages
 
                 return Results.Created($"/pages/{page.Slug}", page);
             });
-
-            return app;
         }
-
-        public record CreatePageRequest(string Title, string Slug);
     }
 }

@@ -5,9 +5,9 @@ namespace WheelsAndBillsAPI.Endpoints.Admin.Pages
 {
     public static class GetPageBySlug
     {
-        public static IEndpointRouteBuilder MapGetPageBySlug(this IEndpointRouteBuilder app)
+        public static RouteHandlerBuilder MapGetPageBySlug(this RouteGroupBuilder app)
         {
-            app.MapGet("/pages/{slug}", async (
+            return app.MapGet("/pages/{slug}", async (
                 string slug,
                 AppDbContext db) =>
             {
@@ -33,8 +33,6 @@ namespace WheelsAndBillsAPI.Endpoints.Admin.Pages
                         })
                 });
             });
-
-            return app;
         }
     }
 }

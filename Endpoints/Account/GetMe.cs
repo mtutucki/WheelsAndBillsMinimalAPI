@@ -1,15 +1,16 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using WheelsAndBillsAPI.Endpoints.Account.DTO;
 using WheelsAndBillsAPI.Persistence;
 
 namespace WheelsAndBillsAPI.Endpoints.Account
 {
     public static class GetMe
     {
-        public static IEndpointRouteBuilder MapGetMe(this IEndpointRouteBuilder app)
+        public static RouteHandlerBuilder MapGetMe(this RouteGroupBuilder app)
         {
-            app.MapGet("account/me", [Authorize] async (
+            return app.MapGet("/me", [Authorize] async (
                 AppDbContext db,
                 ClaimsPrincipal user) =>
             {
@@ -22,7 +23,7 @@ namespace WheelsAndBillsAPI.Endpoints.Account
 
                 var me = await db.Users
                     .Where(u => u.Id == userId)
-                    .Select(u => new GetMeResponse(
+                    .Select(u => new GetMeDTO(
                             u.Id,
                             u.FirstName,
                             u.LastName,
@@ -36,15 +37,6 @@ namespace WheelsAndBillsAPI.Endpoints.Account
 
                 return Results.Ok(me);
             });
-
-            return app;
         }
-
-        public record GetMeResponse(
-            Guid Id,
-            string Name,
-            string LastName,
-            string Email,
-            DateTime CreatedAt);
     }
 }

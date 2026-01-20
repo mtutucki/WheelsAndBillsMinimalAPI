@@ -1,16 +1,17 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using WheelsAndBillsAPI.Domain.Entities.Vehicles;
+using WheelsAndBillsAPI.Endpoints.Vehicles.DTO;
 using WheelsAndBillsAPI.Persistence;
 
 namespace WheelsAndBillsAPI.Endpoints.Vehicles
 {
     public static class AddVehicle
     {
-        public static IEndpointRouteBuilder MapCreateVehicle(this IEndpointRouteBuilder app)
+        public static RouteHandlerBuilder MapCreateVehicle(this RouteGroupBuilder group)
         {
-            app.MapPost("/vehicles", [Authorize] async (
-                CreateVehicleRequest request,
+            return group.MapPost("/", [Authorize] async (
+                CreateVehicleRequestDTO request,
                 AppDbContext db,
                 ClaimsPrincipal user) =>
             {
@@ -34,18 +35,7 @@ namespace WheelsAndBillsAPI.Endpoints.Vehicles
 
                 return Results.Created($"/vehicles/{vehicle.Id}", vehicle.Id);
             });
-
-            return app;
         }
-
-        public record CreateVehicleRequest(
-            string Vin,
-            int Year,
-            Guid BrandId,
-            Guid ModelId,
-            Guid TypeId,
-            Guid StatusId);
     }
-
 }
 

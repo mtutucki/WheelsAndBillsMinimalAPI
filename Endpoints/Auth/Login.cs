@@ -4,15 +4,16 @@ using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using WheelsAndBills.Domain.Entities.Auth;
+using WheelsAndBillsAPI.Endpoints.Auth.DTO;
 
 namespace WheelsAndBillsAPI.Endpoints.Auth
 {
     public static class Login
     {
-        public static IEndpointRouteBuilder MapLogin(this IEndpointRouteBuilder app)
+        public static RouteHandlerBuilder MapLogin(this RouteGroupBuilder app)
         {
-            app.MapPost("/auth/login", async (
-                LoginRequest request,
+            return app.MapPost("/login", async (
+                LoginDTO request,
                 UserManager<ApplicationUser> userManager,
                 IConfiguration config) =>
             {
@@ -48,10 +49,6 @@ namespace WheelsAndBillsAPI.Endpoints.Auth
                     accessToken = new JwtSecurityTokenHandler().WriteToken(token)
                 });
             });
-
-            return app;
         }
-
-        public record LoginRequest(string Email, string Password);
     }
 }

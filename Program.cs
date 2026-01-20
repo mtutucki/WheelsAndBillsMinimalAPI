@@ -7,8 +7,8 @@ using WheelsAndBills.Domain.Entities.Auth;
 using WheelsAndBillsAPI.Endpoints.Auth;
 using WheelsAndBillsAPI.Persistence;
 using WheelsAndBillsAPI.Endpoints.Vehicles;
-using WheelsAndBillsAPI.Endpoints.Admin.Pages;
 using WheelsAndBillsAPI.Endpoints.Account;
+using WheelsAndBillsAPI.Endpoints.Admin;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,7 +26,35 @@ builder.Services.AddCors(options =>
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Description = "Wpisz: Bearer {twój JWT token}"
+    });
+
+    options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
+
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
@@ -89,21 +117,10 @@ app.UseAuthorization();
 
 app.UseCors("DevCors");
 
-//endpoint Account
-app.MapGetMe();
-
-//endpoints admin
-app.MapCreatePage();
-app.MapGetPageBySlug();
-app.MapGetContentBlocksByContentPageId();
-
-// endpointy auth
-app.MapRegister();
-app.MapLogin();
-
-// endoints vehicle
-app.MapCreateVehicle();
-app.MapGetVehicles();
+app.MapAuthEndpoints();
+app.MapVehiclesEndpoints();
+app.MapAccountEndpoints();
+app.MapAdminEndpoints();
 
 
 

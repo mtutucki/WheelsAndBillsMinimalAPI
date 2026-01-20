@@ -5,10 +5,10 @@ namespace WheelsAndBillsAPI.Endpoints.Admin.Pages
 {
     public static class GetContentBlocksByContentPageId
     {
-        public static IEndpointRouteBuilder MapGetContentBlocksByContentPageId(
-            this IEndpointRouteBuilder app)
+        public static RouteHandlerBuilder MapGetContentBlocksByContentPageId(
+            this RouteGroupBuilder app)
         {
-            app.MapGet("/pages/{contentPageId:guid}/blocks", async (
+            return app.MapGet("/pages/{contentPageId:guid}/blocks", async (
                 Guid contentPageId,
                 AppDbContext db) =>
             {
@@ -26,8 +26,6 @@ namespace WheelsAndBillsAPI.Endpoints.Admin.Pages
 
                 return Results.Ok(blocks);
             });
-
-            return app;
         }
     }
 }
