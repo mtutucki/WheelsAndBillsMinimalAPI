@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WheelsAndBillsAPI.Persistence;
 
-namespace WheelsAndBillsAPI.Endpoints.Admin.Pages
+namespace WheelsAndBillsAPI.Endpoints.Admin.ContentBlocks
 {
     public static class GetContentBlocksByContentPageId
     {

@@ -9,6 +9,10 @@ using WheelsAndBillsAPI.Persistence;
 using WheelsAndBillsAPI.Endpoints.Vehicles;
 using WheelsAndBillsAPI.Endpoints.Account;
 using WheelsAndBillsAPI.Endpoints.Admin;
+using WheelsAndBillsAPI.Endpoints.Cost;
+using WheelsAndBillsAPI.Endpoints.Events;
+using WheelsAndBillsAPI.Endpoints.Notifications;
+using WheelsAndBillsAPI.Endpoints.Reports;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -117,12 +121,19 @@ app.UseAuthorization();
 
 app.UseCors("DevCors");
 
-app.MapAuthEndpoints();
-app.MapVehiclesEndpoints();
-app.MapAccountEndpoints();
-app.MapAdminEndpoints();
 
 
+
+var api = app.MapGroup("/api");
+
+api.MapAuthEndpoints();
+api.MapAccountEndpoints();
+api.MapVehiclesEndpoints();
+api.MapAdminEndpoints();
+api.MapCostsEndpoints();
+api.MapEventsEndpoints();
+api.MapNotificationsEndpoints();
+api.MapReportEndpoints();
 
 app.Run();
 

@@ -2,16 +2,15 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using WheelsAndBillsAPI.Endpoints.Vehicles.DTO;
 using WheelsAndBillsAPI.Persistence;
 
-namespace WheelsAndBillsAPI.Endpoints.Vehicles
+namespace WheelsAndBillsAPI.Endpoints.Vehicles.Vehicles.UserVehicles
 {
     public static class GetVehicles
     {
-        public static RouteHandlerBuilder MapGetVehicles(this RouteGroupBuilder group)
+        public static RouteHandlerBuilder MapGetUserVehicles(this RouteGroupBuilder group)
         {
-            return group.MapGet("/", [Authorize] async (
+            return group.MapGet("", [Authorize] async (
                 AppDbContext db,
                 ClaimsPrincipal user) =>
             {

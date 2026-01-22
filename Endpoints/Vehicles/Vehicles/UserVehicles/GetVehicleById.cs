@@ -1,14 +1,13 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using WheelsAndBillsAPI.Endpoints.Vehicles.DTO;
 using WheelsAndBillsAPI.Persistence;
 
-namespace WheelsAndBillsAPI.Endpoints.Vehicles
+namespace WheelsAndBillsAPI.Endpoints.Vehicles.Vehicles.UserVehicles
 {
     public static class GetVehicleById
     {
-        public static RouteHandlerBuilder MapGetVehicleById(this RouteGroupBuilder group)
+        public static RouteHandlerBuilder MapGetUserVehicleById(this RouteGroupBuilder group)
         {
             return group.MapGet("/{id:guid}", [Authorize] async (
                 Guid id,
