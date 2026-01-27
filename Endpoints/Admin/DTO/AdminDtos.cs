@@ -1,5 +1,18 @@
 ﻿namespace WheelsAndBillsAPI.Endpoints.Admin.DTO
 {
+    public record ContentPagePublicDto(
+    Guid Id,
+    string Title,
+    string Slug,
+    IEnumerable<ContentBlockPublicDto> Blocks
+);
+
+    public record ContentBlockPublicDto(
+        string Slot,
+        string Content
+    );
+
+
     public record CreatePageDTO(string Title, string Slug);
 
     public record GetContentBlockDTO(
@@ -14,6 +27,7 @@
          string Content,
          string Slot
     );
+
 
 
 

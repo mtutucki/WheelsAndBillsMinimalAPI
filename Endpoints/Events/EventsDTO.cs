@@ -1,5 +1,17 @@
-﻿namespace WheelsAndBillsAPI.Endpoints.Events
+﻿using System.Text.Json;
+
+namespace WheelsAndBillsAPI.Endpoints.Events
 {
+
+    public record CreateMyVehicleEventDTO(
+        Guid VehicleId,
+        Guid EventTypeId,
+        DateTime EventDate,
+        int Mileage,
+        string? Description,
+        Dictionary<string, JsonElement>? Data
+    );
+
     public class EventsDTO
     {
         public record CreateEventPartDTO(

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
 using WheelsAndBillsAPI.Persistence;
 
 namespace WheelsAndBillsAPI.Endpoints.Vehicles.VehicleMileage
@@ -117,6 +118,62 @@ namespace WheelsAndBillsAPI.Endpoints.Vehicles.VehicleMileage
                 await db.SaveChangesAsync();
 
                 return Results.NoContent();
+            });
+        }
+
+        public static RouteHandlerBuilder MapCreateMyVehicleMileage(this RouteGroupBuilder app)
+        {
+            return app.MapPost("/my-mileage", async (
+                CreateVehicleMileageDTO request,
+                ClaimsPrincipal user,
+                AppDbContext db) =>
+            {
+                var userIdString = user.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (userIdString is null)
+                    return Results.Unauthorized();
+
+                var userId = Guid.Parse(userIdString);
+
+                var vehicleExists = await db.Vehicles
+                    .AnyAsync(v =>
+                        v.Id == request.VehicleId &&
+                        v.UserId == userId
+                    );
+
+                if (!vehicleExists)
+                    return Results.BadRequest("Vehicle does not belong to user");
+
+                var lastMileage = await db.VehicleMileage
+                    .Where(x => x.VehicleId == request.VehicleId)
+                    .OrderByDescending(x => x.Date)
+                    .Select(x => x.Mileage)
+                    .FirstOrDefaultAsync();
+
+                if (lastMileage != 0 && request.Mileage <= lastMileage)
+                    return Results.BadRequest(
+                        $"Mileage must be greater than last value ({lastMileage} km)"
+                    );
+
+                var item = new Domain.Entities.Vehicles.VehicleMileage
+                {
+                    Id = Guid.NewGuid(),
+                    VehicleId = request.VehicleId,
+                    Mileage = request.Mileage,
+                    Date = request.Date
+                };
+
+                db.VehicleMileage.Add(item);
+                await db.SaveChangesAsync();
+
+                return Results.Created(
+                    $"/vehicle-mileages/{item.Id}",
+                    new GetVehicleMileageDTO(
+                        item.Id,
+                        item.VehicleId,
+                        item.Mileage,
+                        item.Date
+                    )
+                );
             });
         }
     }

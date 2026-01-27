@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
 using WheelsAndBillsAPI.Persistence;
 
 namespace WheelsAndBillsAPI.Endpoints.Vehicles.VehicleNote
@@ -125,6 +126,50 @@ namespace WheelsAndBillsAPI.Endpoints.Vehicles.VehicleNote
                 await db.SaveChangesAsync();
 
                 return Results.NoContent();
+            });
+        }
+
+        public static RouteHandlerBuilder MapCreateMyVehicleNote(this RouteGroupBuilder app)
+        {
+            return app.MapPost("/my-notes", async (
+                CreateMyVehicleNoteDTO request,
+                ClaimsPrincipal user,
+                AppDbContext db) =>
+            {
+                var userIdString = user.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (userIdString is null)
+                    return Results.Unauthorized();
+
+                var userId = Guid.Parse(userIdString);
+
+                var vehicleExists = await db.Vehicles
+                    .AnyAsync(v => v.Id == request.VehicleId && v.UserId == userId);
+
+                if (!vehicleExists)
+                    return Results.BadRequest("Vehicle does not belong to user");
+
+                var note = new Domain.Entities.Vehicles.VehicleNote
+                {
+                    Id = Guid.NewGuid(),
+                    VehicleId = request.VehicleId,
+                    UserId = userId,
+                    Content = request.Content,
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                db.VehicleNotes.Add(note);
+                await db.SaveChangesAsync();
+
+                return Results.Created(
+                    $"/vehicle-notes/{note.Id}",
+                    new GetVehicleNoteDTO(
+                        note.Id,
+                        note.VehicleId,
+                        note.UserId,
+                        note.Content,
+                        note.CreatedAt
+                    )
+                );
             });
         }
     }

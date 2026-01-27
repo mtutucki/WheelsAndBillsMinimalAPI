@@ -15,10 +15,14 @@ namespace WheelsAndBillsAPI.Endpoints.Admin.ContentPages
                 {
                     var page = await db.ContentPage
                         .Where(p => p.Slug == slug)
-                        .Select(p => new GetContentPageDTO(
+                        .Select(p => new ContentPagePublicDto(
                             p.Id,
                             p.Title,
-                            p.Slug
+                            p.Slug,
+                            p.Blocks.Select(b => new ContentBlockPublicDto(
+                                b.Slot,
+                                b.Content
+                            ))
                         ))
                         .FirstOrDefaultAsync();
 

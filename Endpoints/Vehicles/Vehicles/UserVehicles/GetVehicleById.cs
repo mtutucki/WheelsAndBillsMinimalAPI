@@ -51,6 +51,8 @@ namespace WheelsAndBillsAPI.Endpoints.Vehicles.Vehicles.UserVehicles
                             .Where(e => e.VehicleId == v.Id)
                             .Include(e => e.EventType)
                             .OrderByDescending(e => e.EventDate)
+                            .ThenByDescending(e => e.Mileage)
+                            .ThenByDescending(e => e.CreatedAt)
                             .Select(e => new VehicleEventDTO(
                                 e.Id,
                                 new LookupDTO(e.EventTypeId, e.EventType.Name),

@@ -96,12 +96,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-
-
-
-builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
-
 
 
 var app = builder.Build();
@@ -115,11 +110,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-
+app.UseCors("DevCors");
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseCors("DevCors");
+
 
 
 

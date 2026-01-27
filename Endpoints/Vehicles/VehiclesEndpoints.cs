@@ -1,4 +1,5 @@
-﻿using WheelsAndBillsAPI.Endpoints.Vehicles.VehicleBrand;
+﻿using WheelsAndBillsAPI.Endpoints.Events.VehicleEvents;
+using WheelsAndBillsAPI.Endpoints.Vehicles.VehicleBrand;
 using WheelsAndBillsAPI.Endpoints.Vehicles.VehicleMileage;
 using WheelsAndBillsAPI.Endpoints.Vehicles.VehicleModel;
 using WheelsAndBillsAPI.Endpoints.Vehicles.VehicleNote;
@@ -19,7 +20,7 @@ namespace WheelsAndBillsAPI.Endpoints.Vehicles
                 .RequireAuthorization();
 
             var userVehicles = app
-                .MapGroup("/user")
+                .MapGroup("/vehicles/user")
                 .WithTags("User vehicles")
                 .RequireAuthorization();
 
@@ -63,6 +64,9 @@ namespace WheelsAndBillsAPI.Endpoints.Vehicles
             userVehicles.MapGetUserVehicles();
             userVehicles.MapGetUserVehicleById();
             userVehicles.MapCreateMyVehicle();
+            userVehicles.MapCreateMyVehicleNote();
+            userVehicles.MapCreateMyVehicleEvent();
+            userVehicles.MapCreateMyVehicleMileage();
 
             vehiclesBrand.MapCreateVehicleBrand();
             vehiclesBrand.MapUpdateVehicleBrand();

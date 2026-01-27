@@ -1,5 +1,10 @@
 ﻿namespace WheelsAndBillsAPI.Endpoints.Vehicles
 {
+    public record CreateMyVehicleNoteDTO(
+        Guid VehicleId,
+        string Content
+    );
+
     public record CreateVehicleRequestDTO(
             string Vin,
             int Year,

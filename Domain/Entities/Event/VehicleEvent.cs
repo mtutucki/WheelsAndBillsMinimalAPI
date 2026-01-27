@@ -9,6 +9,7 @@ namespace WheelsAndBillsAPI.Domain.Entities.Events
         public Guid EventTypeId { get; set; }
 
         public DateTime EventDate { get; set; }
+        public DateTime CreatedAt { get; set; }
         public int Mileage { get; set; }
         public string? Description { get; set; }
 
