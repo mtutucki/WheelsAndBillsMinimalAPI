@@ -176,5 +176,36 @@ namespace WheelsAndBillsAPI.Endpoints.Vehicles.VehicleMileage
                 );
             });
         }
+
+        public static RouteHandlerBuilder MapDeleteMyVehicleMileage(this RouteGroupBuilder app)
+        {
+            return app.MapDelete("/my-mileages/{id:guid}", async (
+                Guid id,
+                ClaimsPrincipal user,
+                AppDbContext db) =>
+            {
+                var userIdString = user.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (userIdString is null)
+                    return Results.Unauthorized();
+
+                var userId = Guid.Parse(userIdString);
+
+                var item = await db.VehicleMileage
+                    .Include(vm => vm.Vehicle)
+                    .FirstOrDefaultAsync(vm => vm.Id == id);
+
+                if (item is null)
+                    return Results.NotFound();
+
+                if (item.Vehicle.UserId != userId)
+                    return Results.Forbid();
+
+                db.VehicleMileage.Remove(item);
+                await db.SaveChangesAsync();
+
+                return Results.NoContent();
+            });
+        }
+
     }
 }

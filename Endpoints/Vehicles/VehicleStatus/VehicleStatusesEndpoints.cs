@@ -10,6 +10,7 @@ namespace WheelsAndBillsAPI.Endpoints.Vehicles.VehicleStatus
             return app.MapGet("", async (AppDbContext db) =>
             {
                 var statuses = await db.VehicleStatuses
+                    .Where(s => s.Id != Guid.Parse("85C30BAB-7FA3-4124-BE5D-1E220CACE01F"))
                     .OrderBy(s => s.Name)
                     .Select(s => new GetVehicleStatusDTO(s.Id, s.Name))
                     .ToListAsync();

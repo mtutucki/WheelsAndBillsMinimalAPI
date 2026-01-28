@@ -53,6 +53,13 @@ namespace WheelsAndBillsAPI.Endpoints.Events
                 .WithTags("Workshop")
                 .RequireAuthorization();
 
+            var userEvents = app
+                .MapGroup("/vehicles/user")
+                .WithTags("User vehicles")
+                .RequireAuthorization();
+
+            userEvents.MapDeleteMyVehicleEvent();
+
 
             eventParts.MapCreateEventPart();
             eventParts.MapUpdateEventPart();

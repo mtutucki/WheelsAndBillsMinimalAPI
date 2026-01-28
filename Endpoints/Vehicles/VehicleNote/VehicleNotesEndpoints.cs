@@ -129,6 +129,36 @@ namespace WheelsAndBillsAPI.Endpoints.Vehicles.VehicleNote
             });
         }
 
+        public static RouteHandlerBuilder MapDeleteMyVehicleNote(this RouteGroupBuilder app)
+        {
+            return app.MapDelete("/my-notes/{id:guid}", async (
+                Guid id,
+                ClaimsPrincipal user,
+                AppDbContext db) =>
+            {
+                var userIdString = user.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (userIdString is null)
+                    return Results.Unauthorized();
+
+                var userId = Guid.Parse(userIdString);
+
+                var item = await db.VehicleNotes
+                    .Include(vm => vm.Vehicle)
+                    .FirstOrDefaultAsync(vm => vm.Id == id);
+
+                if (item is null)
+                    return Results.NotFound();
+
+                if (item.Vehicle.UserId != userId)
+                    return Results.Forbid();
+
+                db.VehicleNotes.Remove(item);
+                await db.SaveChangesAsync();
+
+                return Results.NoContent();
+            });
+        }
+
         public static RouteHandlerBuilder MapCreateMyVehicleNote(this RouteGroupBuilder app)
         {
             return app.MapPost("/my-notes", async (

@@ -21,7 +21,9 @@ namespace WheelsAndBillsAPI.Endpoints.Vehicles.Vehicles.UserVehicles
                     return Results.Unauthorized();
 
                 var vehicles = await db.Vehicles
-                    .Where(v => v.UserId == userId)
+                    .Where(v => v.UserId == userId && v.StatusId != Guid.Parse("85C30BAB-7FA3-4124-BE5D-1E220CACE01F"))
+                    .OrderByDescending(v => v.Status.Name == "Aktywny")
+                    .ThenBy(v => v.Brand.Name)
                     .Include(v => v.Brand)
                     .Include(v => v.Model)
                     .Include(v => v.Type)
@@ -40,10 +42,6 @@ namespace WheelsAndBillsAPI.Endpoints.Vehicles.Vehicles.UserVehicles
 
                 return Results.Ok(vehicles);
             });
-
-
-
         }
-
     }
 }
