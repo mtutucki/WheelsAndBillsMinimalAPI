@@ -12,6 +12,7 @@ namespace WheelsAndBillsAPI.Endpoints.Account
                 .RequireAuthorization();
 
             account.MapGetMe();
+            account.MapUpdateMe();
 
             return app;
         }

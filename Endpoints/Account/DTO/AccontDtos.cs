@@ -7,4 +7,9 @@
             string Email,
             DateTime CreatedAt
      );
+
+    public record UpdateMyProfileDTO(
+        string FirstName,
+        string LastName
+    );
 }
