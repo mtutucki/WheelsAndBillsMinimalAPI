@@ -1,0 +1,12 @@
+global using WheelsAndBills.Application.DTOs.Account.DTO;
+global using WheelsAndBills.Application.DTOs.Admin.DTO;
+global using WheelsAndBills.Application.DTOs.Auth.DTO;
+global using WheelsAndBills.Application.DTOs.Costs;
+global using WheelsAndBills.Application.DTOs.Events;
+global using WheelsAndBills.Application.DTOs.Notifications;
+global using WheelsAndBills.Application.DTOs.Reports;
+global using WheelsAndBills.Application.DTOs.Vehicles;
+global using static WheelsAndBills.Application.DTOs.Costs.CostsDTO;
+global using static WheelsAndBills.Application.DTOs.Events.EventsDTO;
+global using static WheelsAndBills.Application.DTOs.Notifications.NotificationsDTOs;
+global using static WheelsAndBills.Application.DTOs.Reports.ReportDTOs;
