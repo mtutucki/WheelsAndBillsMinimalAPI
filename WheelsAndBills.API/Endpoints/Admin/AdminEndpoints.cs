@@ -3,6 +3,7 @@ using WheelsAndBills.API.Endpoints.Admin.ContentPages;
 using WheelsAndBills.API.Endpoints.Admin.DicionaryItems;
 using WheelsAndBills.API.Endpoints.Admin.Dictionaries;
 using WheelsAndBills.API.Endpoints.Admin.FileResources;
+using WheelsAndBills.API.Endpoints.Admin.Roles;
 using WheelsAndBills.API.Endpoints.Admin.SystemSettings;
 
 namespace WheelsAndBills.API.Endpoints.Admin
@@ -82,6 +83,7 @@ namespace WheelsAndBills.API.Endpoints.Admin
             systemSettings.MapGetSystemSettingById();
             systemSettings.MapGetSystemSettingByKey();
 
+            app.MapRoleAdminEndpoints();
 
             pagesInfo.MapGetContentBlocksByContentPageId();
             pagesInfo.MapGetContentPageById();

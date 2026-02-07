@@ -13,7 +13,7 @@ namespace WheelsAndBills.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     [Migration("20260119213734_add-event")]
-    partial class addevent
+    partial class AddEvent
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

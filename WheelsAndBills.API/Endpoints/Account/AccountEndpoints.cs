@@ -11,6 +11,8 @@ namespace WheelsAndBills.API.Endpoints.Account
 
             account.MapGetMe();
             account.MapUpdateMe();
+            account.MapChangePassword();
+            account.MapDeleteAccount();
 
             return app;
         }

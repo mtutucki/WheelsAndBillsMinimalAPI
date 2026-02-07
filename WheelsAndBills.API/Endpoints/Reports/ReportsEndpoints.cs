@@ -41,6 +41,11 @@ namespace WheelsAndBills.API.Endpoints.Reports
             reports.MapDeleteReport();
             reports.MapGetReports();
             reports.MapGetReportById();
+            reports.MapGetMyReports();
+            reports.MapGetMyReportById();
+            reports.MapDownloadReport();
+            reports.MapDownloadGeneratedReport();
+            reports.MapGenerateReportFiles();
 
             reportsDefinitions.MapCreateReportDefinition();
             reportsDefinitions.MapUpdateReportDefinition();

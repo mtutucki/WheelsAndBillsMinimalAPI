@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace WheelsAndBills.API.Migrations
 {
     /// <inheritdoc />
-    public partial class addevent : Migration
+    public partial class AddEvent : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

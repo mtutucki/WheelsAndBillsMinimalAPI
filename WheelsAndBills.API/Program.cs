@@ -41,14 +41,21 @@ using WheelsAndBills.Application.Features.Reports.GeneratedReports;
 using WheelsAndBills.Application.Features.Reports.ReportDefinitions;
 using WheelsAndBills.Application.Features.Reports.ReportParameters;
 using WheelsAndBills.Application.Features.Reports.Reports;
+using WheelsAndBills.Application.Features.Reports.ReportQueries;
 using WheelsAndBills.Application.Features.Admin.SystemSettings;
 using WheelsAndBills.Application.Features.Admin.Dictionaries;
 using WheelsAndBills.Application.Features.Admin.DictionaryItems;
 using WheelsAndBills.Application.Features.Admin.FileResources;
 using WheelsAndBills.Application.Features.Admin.ContentBlocks;
 using WheelsAndBills.Application.Features.Admin.ContentPages;
+using WheelsAndBills.Application.Features.Dashboard;
+using WheelsAndBills.API.Endpoints.Dashboard;
+using WheelsAndBills.API.Endpoints.Reports.ReportQueries;
+using QuestPDF.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
+
+QuestPDF.Settings.License = LicenseType.Community;
 
 builder.Services.AddCors(options =>
 {
@@ -126,12 +133,14 @@ builder.Services.AddScoped<IReportDefinitionsService, ReportDefinitionsService>(
 builder.Services.AddScoped<IReportParametersService, ReportParametersService>();
 builder.Services.AddScoped<IGeneratedReportsService, GeneratedReportsService>();
 builder.Services.AddScoped<IReportsService, ReportsService>();
+builder.Services.AddScoped<IReportQueriesService, ReportQueriesService>();
 builder.Services.AddScoped<ISystemSettingsService, SystemSettingsService>();
 builder.Services.AddScoped<IDictionariesService, DictionariesService>();
 builder.Services.AddScoped<IDictionaryItemsService, DictionaryItemsService>();
 builder.Services.AddScoped<IFileResourcesService, FileResourcesService>();
 builder.Services.AddScoped<IContentBlocksService, ContentBlocksService>();
 builder.Services.AddScoped<IContentPagesService, ContentPagesService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 
 builder.Services
     .AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
@@ -169,6 +178,8 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
+await SeedRolesAsync(app.Services);
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -192,5 +203,20 @@ api.MapCostsEndpoints();
 api.MapEventsEndpoints();
 api.MapNotificationsEndpoints();
 api.MapReportEndpoints();
+api.MapDashboardEndpoints();
+app.MapReportGeneration();
 
 app.Run();
+
+static async Task SeedRolesAsync(IServiceProvider services)
+{
+    using var scope = services.CreateScope();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
+
+    var roles = new[] { "Admin", "User", "Manager" };
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+            await roleManager.CreateAsync(new IdentityRole<Guid>(role));
+    }
+}
