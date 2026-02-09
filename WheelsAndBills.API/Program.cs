@@ -37,6 +37,7 @@ using WheelsAndBills.Application.Features.Cost.CostTypes;
 using WheelsAndBills.Application.Features.Cost.RecurringCosts;
 using WheelsAndBills.Application.Features.Notifications.NotificationTypes;
 using WheelsAndBills.Application.Features.Notifications.Notifications;
+using WheelsAndBills.Application.Features.Notifications.Preferences;
 using WheelsAndBills.Application.Features.Reports.GeneratedReports;
 using WheelsAndBills.Application.Features.Reports.ReportDefinitions;
 using WheelsAndBills.Application.Features.Reports.ReportParameters;
@@ -52,6 +53,8 @@ using WheelsAndBills.Application.Features.Dashboard;
 using WheelsAndBills.API.Endpoints.Dashboard;
 using WheelsAndBills.API.Endpoints.Reports.ReportQueries;
 using QuestPDF.Infrastructure;
+using WheelsAndBills.API.Endpoints.Errors;
+using WheelsAndBills.API.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -129,6 +132,7 @@ builder.Services.AddScoped<ICostsService, CostsService>();
 builder.Services.AddScoped<IRecurringCostsService, RecurringCostsService>();
 builder.Services.AddScoped<INotificationTypesService, NotificationTypesService>();
 builder.Services.AddScoped<INotificationsService, NotificationsService>();
+builder.Services.AddScoped<INotificationPreferencesService, NotificationPreferencesService>();
 builder.Services.AddScoped<IReportDefinitionsService, ReportDefinitionsService>();
 builder.Services.AddScoped<IReportParametersService, ReportParametersService>();
 builder.Services.AddScoped<IGeneratedReportsService, GeneratedReportsService>();
@@ -192,6 +196,8 @@ app.UseHttpsRedirection();
 app.UseCors("DevCors");
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<AuditLogMiddleware>();
+app.UseMiddleware<ErrorLogMiddleware>();
 
 var api = app.MapGroup("/api");
 
@@ -204,6 +210,7 @@ api.MapEventsEndpoints();
 api.MapNotificationsEndpoints();
 api.MapReportEndpoints();
 api.MapDashboardEndpoints();
+api.MapErrorsEndpoints();
 app.MapReportGeneration();
 
 app.Run();

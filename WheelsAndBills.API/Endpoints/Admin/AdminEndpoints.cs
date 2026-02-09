@@ -5,6 +5,7 @@ using WheelsAndBills.API.Endpoints.Admin.Dictionaries;
 using WheelsAndBills.API.Endpoints.Admin.FileResources;
 using WheelsAndBills.API.Endpoints.Admin.Roles;
 using WheelsAndBills.API.Endpoints.Admin.SystemSettings;
+using WheelsAndBills.API.Endpoints.Admin.Logs;
 
 namespace WheelsAndBills.API.Endpoints.Admin
 {
@@ -48,6 +49,11 @@ namespace WheelsAndBills.API.Endpoints.Admin
                 .WithTags("Admin - System settings")
                 .RequireAuthorization();
 
+            var logs = app
+                .MapGroup(mapGroup)
+                .WithTags("Admin - Logs")
+                .RequireAuthorization();
+
             contectBlocksAuth.MapGetContentBlocks();
             contectBlocksAuth.MapCreateContentBlocks();
             contectBlocksAuth.MapUpdateContentBlocks();
@@ -82,6 +88,9 @@ namespace WheelsAndBills.API.Endpoints.Admin
             systemSettings.MapGetSystemSettings();
             systemSettings.MapGetSystemSettingById();
             systemSettings.MapGetSystemSettingByKey();
+
+            logs.MapGetAuditLogs();
+            logs.MapGetErrorLogs();
 
             app.MapRoleAdminEndpoints();
 

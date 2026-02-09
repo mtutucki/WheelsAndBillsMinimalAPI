@@ -77,6 +77,7 @@ namespace WheelsAndBills.API.Endpoints.Events
             fuelingEvents.MapDeleteFuelingEvent();
             fuelingEvents.MapGetFuelingEvents();
             fuelingEvents.MapGetFuelingEventById();
+            fuelingEvents.MapGetFuelingSummaryForUser();
 
             parts.MapCreatePart();
             parts.MapUpdatePart();
@@ -101,6 +102,7 @@ namespace WheelsAndBills.API.Endpoints.Events
             vehicleEvent.MapDeleteVehicleEvent();
             vehicleEvent.MapGetVehicleEvents();
             vehicleEvent.MapGetVehicleEventById();
+            vehicleEvent.MapExportMyTimelinePdf();
 
             worskshop.MapCreateWorkshop();
             worskshop.MapUpdateWorkshop();

@@ -22,6 +22,12 @@ namespace WheelsAndBills.API.Endpoints.Notifications
             notifications.MapDeleteNotification();
             notifications.MapGetNotifications();
             notifications.MapGetNotificationById();
+            notifications.MapGetMyNotifications();
+            notifications.MapGetPreferences();
+            notifications.MapUpdatePreferences();
+            notifications.MapMarkAsRead();
+            notifications.MapMarkAllAsRead();
+            notifications.MapGetUnreadCount();
 
             notificationsTypes.MapCreateNotificationType();
             notificationsTypes.MapUpdateNotificationType();

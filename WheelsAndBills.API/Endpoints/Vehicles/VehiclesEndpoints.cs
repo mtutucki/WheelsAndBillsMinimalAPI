@@ -71,6 +71,7 @@ namespace WheelsAndBills.API.Endpoints.Vehicles
             userVehicles.MapDeleteMyVehicleMileage();
             userVehicles.MapDeleteMyVehicleNote();
             userVehicles.MapDeleteMyVehicle();
+            userVehicles.MapGetServiceBookPdf();
 
             vehiclesBrand.MapCreateVehicleBrand();
             vehiclesBrand.MapUpdateVehicleBrand();

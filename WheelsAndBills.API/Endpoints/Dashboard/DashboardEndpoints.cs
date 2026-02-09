@@ -10,6 +10,7 @@
                 .RequireAuthorization();
 
             dashboard.MapGetDashboard();
+            dashboard.MapGetCostCompare();
 
             return app;
         }
