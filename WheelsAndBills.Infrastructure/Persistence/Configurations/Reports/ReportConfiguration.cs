@@ -17,6 +17,10 @@ namespace Infrastructure.Persistence.Configurations.Reports
             builder.HasOne(r => r.Definition)
                 .WithMany()
                 .HasForeignKey(r => r.ReportDefinitionId);
+
+            builder.HasMany(r => r.Parameters)
+                .WithOne(p => p.Report)
+                .HasForeignKey(p => p.ReportId);
         }
     }
 

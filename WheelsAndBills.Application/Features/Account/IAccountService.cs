@@ -7,5 +7,8 @@ namespace WheelsAndBills.Application.Features.Account
     {
         Task<GetMeDTO?> GetMeAsync(Guid userId, CancellationToken cancellationToken = default);
         Task<ServiceResult> UpdateMeAsync(Guid userId, UpdateMyProfileDTO request, CancellationToken cancellationToken = default);
+        Task<ServiceResult> ChangePasswordAsync(Guid userId, ChangePasswordDTO request, CancellationToken cancellationToken = default);
+        Task<ServiceResult> DeleteAccountAsync(Guid userId, DeleteAccountDTO request, CancellationToken cancellationToken = default);
+
     }
 }

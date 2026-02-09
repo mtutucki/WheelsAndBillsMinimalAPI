@@ -9,6 +9,7 @@ using WheelsAndBills.Domain.Entities.Admin;
 using WheelsAndBills.Domain.Entities.Events;
 using WheelsAndBills.Domain.Entities.Cost;
 using WheelsAndBills.Domain.Entities.Notification;
+using static WheelsAndBills.Application.DTOs.Reports.ReportDTOs;
 
 namespace WheelsAndBills.Infrastructure.Persistence
 {
@@ -45,6 +46,7 @@ namespace WheelsAndBills.Infrastructure.Persistence
         // Notifications
         public DbSet<Notification> Notifications => Set<Notification>();
         public DbSet<NotificationType> NotificationTypes => Set<NotificationType>();
+        public DbSet<NotificationPreference> NotificationPreferences => Set<NotificationPreference>();
 
         // Reports
         public DbSet<Report> Reports => Set<Report>();
@@ -59,11 +61,22 @@ namespace WheelsAndBills.Infrastructure.Persistence
         public DbSet<DictionaryItem> DictionaryItems => Set<DictionaryItem>();
         public DbSet<FileResource> FileResources => Set<FileResource>();
         public DbSet<SystemSetting> SystemSettings => Set<SystemSetting>();
+        public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+        public DbSet<ErrorLog> ErrorLogs => Set<ErrorLog>();
+
+        // Reporst from SQL
+        public DbSet<MonthlyCostRow> MonthlyCostRows => Set<MonthlyCostRow>();
+        public DbSet<CostsByEventTypeRow> CostsByEventTypeRows => Set<CostsByEventTypeRow>();
+        public DbSet<RepairHistoryRow> RepairHistoryRows => Set<RepairHistoryRow>();
 
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            builder.Entity<MonthlyCostRow>().HasNoKey().ToView("vw_Report_MonthlyCosts");
+            builder.Entity<CostsByEventTypeRow>().HasNoKey().ToView("vw_Report_CostsByEventType");
+            builder.Entity<RepairHistoryRow>().HasNoKey().ToView("vw_Report_RepairsHistory");
 
             builder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
         }

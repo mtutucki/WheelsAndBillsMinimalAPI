@@ -13,6 +13,7 @@ namespace WheelsAndBills.Domain.Entities.Notification
         public string Message { get; set; } = null!;
         public DateTime ScheduledAt { get; set; }
         public bool IsSent { get; set; }
+        public bool IsRead { get; set; }
 
         public ApplicationUser User { get; set; } = null!;
         public Vehicle Vehicle { get; set; } = null!;

@@ -29,7 +29,27 @@ namespace WheelsAndBills.Application.Features.Notifications.Notifications
                     n.Title,
                     n.Message,
                     n.ScheduledAt,
-                    n.IsSent
+                    n.IsSent,
+                    n.IsRead
+                ))
+                .ToListAsync(cancellationToken);
+        }
+
+        public async Task<IReadOnlyList<GetNotificationDTO>> GetForUserAsync(
+            Guid userId,
+            CancellationToken cancellationToken = default)
+        {
+            return await _db.Notifications
+                .Where(n => n.UserId == userId)
+                .Select(n => new GetNotificationDTO(
+                    n.Id,
+                    n.UserId,
+                    n.VehicleId,
+                    n.Title,
+                    n.Message,
+                    n.ScheduledAt,
+                    n.IsSent,
+                    n.IsRead
                 ))
                 .ToListAsync(cancellationToken);
         }
@@ -45,7 +65,8 @@ namespace WheelsAndBills.Application.Features.Notifications.Notifications
                     n.Title,
                     n.Message,
                     n.ScheduledAt,
-                    n.IsSent
+                    n.IsSent,
+                    n.IsRead
                 ))
                 .FirstOrDefaultAsync(cancellationToken);
         }
@@ -68,7 +89,8 @@ namespace WheelsAndBills.Application.Features.Notifications.Notifications
                 Title = request.Title,
                 Message = request.Message,
                 ScheduledAt = request.ScheduledAt,
-                IsSent = false
+                IsSent = false,
+                IsRead = false
             };
 
             _db.Notifications.Add(notification);
@@ -81,7 +103,8 @@ namespace WheelsAndBills.Application.Features.Notifications.Notifications
                 notification.Title,
                 notification.Message,
                 notification.ScheduledAt,
-                notification.IsSent
+                notification.IsSent,
+                notification.IsRead
             ));
         }
 
@@ -105,7 +128,8 @@ namespace WheelsAndBills.Application.Features.Notifications.Notifications
                 notification.Title,
                 notification.Message,
                 notification.ScheduledAt,
-                notification.IsSent
+                notification.IsSent,
+                notification.IsRead
             ));
         }
 
@@ -117,6 +141,39 @@ namespace WheelsAndBills.Application.Features.Notifications.Notifications
 
             _db.Notifications.Remove(notification);
             await _db.SaveChangesAsync(cancellationToken);
+
+            return ServiceResult.Ok();
+        }
+
+        public async Task<ServiceResult> MarkAsReadAsync(
+            Guid id,
+            Guid userId,
+            CancellationToken cancellationToken = default)
+        {
+            var notification = await _db.Notifications
+                .FirstOrDefaultAsync(n => n.Id == id && n.UserId == userId, cancellationToken);
+
+            if (notification is null)
+                return ServiceResult.Fail(ErrorNotFound);
+
+            if (!notification.IsRead)
+            {
+                notification.IsRead = true;
+                await _db.SaveChangesAsync(cancellationToken);
+            }
+
+            return ServiceResult.Ok();
+        }
+
+        public async Task<ServiceResult> MarkAllAsReadAsync(
+            Guid userId,
+            CancellationToken cancellationToken = default)
+        {
+            await _db.Notifications
+                .Where(n => n.UserId == userId && !n.IsRead)
+                .ExecuteUpdateAsync(
+                    s => s.SetProperty(n => n.IsRead, true),
+                    cancellationToken);
 
             return ServiceResult.Ok();
         }

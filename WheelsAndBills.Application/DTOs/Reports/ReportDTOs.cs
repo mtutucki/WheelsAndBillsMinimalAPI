@@ -58,5 +58,26 @@ namespace WheelsAndBills.Application.DTOs.Reports
             string Name,
             string Value
         );
+
+        public class MonthlyCostRow
+        {
+            public int Year { get; set; }
+            public int Month { get; set; }
+            public decimal TotalAmount { get; set; }
+        }
+
+        public class CostsByEventTypeRow
+        {
+            public string EventType { get; set; } = null!;
+            public decimal TotalAmount { get; set; }
+        }
+
+        public class RepairHistoryRow
+        {
+            public DateTime EventDate { get; set; }
+            public Guid RepairEventId { get; set; }
+            public decimal LaborCost { get; set; }
+            public decimal PartsCost { get; set; }
+        }
     }
 }

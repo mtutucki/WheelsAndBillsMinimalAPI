@@ -14,10 +14,15 @@ namespace WheelsAndBills.Application.Features.Auth
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _config;
+        private readonly RoleManager<IdentityRole<Guid>> _roleManager;
 
-        public AuthService(UserManager<ApplicationUser> userManager, IConfiguration config)
+        public AuthService(
+            UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole<Guid>> roleManager,
+            IConfiguration config)
         {
             _userManager = userManager;
+            _roleManager = roleManager;
             _config = config;
         }
 
@@ -34,6 +39,11 @@ namespace WheelsAndBills.Application.Features.Auth
             var result = await _userManager.CreateAsync(user, request.Password);
             if (!result.Succeeded)
                 return ServiceResult<RegisterResult>.Fail("Registration failed");
+
+            if (await _roleManager.RoleExistsAsync("User"))
+            {
+                await _userManager.AddToRoleAsync(user, "User");
+            }
 
             return ServiceResult<RegisterResult>.Ok(new RegisterResult(user.Id, user.Email!));
         }

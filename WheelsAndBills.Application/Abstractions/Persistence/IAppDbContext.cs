@@ -7,6 +7,7 @@ using WheelsAndBills.Domain.Entities.Events;
 using WheelsAndBills.Domain.Entities.Notification;
 using WheelsAndBills.Domain.Entities.Report;
 using WheelsAndBills.Domain.Entities.Vehicles;
+using static WheelsAndBills.Application.DTOs.Reports.ReportDTOs;
 
 namespace WheelsAndBills.Application.Abstractions.Persistence
 {
@@ -39,6 +40,7 @@ namespace WheelsAndBills.Application.Abstractions.Persistence
 
         DbSet<Notification> Notifications { get; }
         DbSet<NotificationType> NotificationTypes { get; }
+        DbSet<NotificationPreference> NotificationPreferences { get; }
 
         DbSet<Report> Reports { get; }
         DbSet<ReportDefinition> ReportDefinitions { get; }
@@ -51,6 +53,12 @@ namespace WheelsAndBills.Application.Abstractions.Persistence
         DbSet<DictionaryItem> DictionaryItems { get; }
         DbSet<FileResource> FileResources { get; }
         DbSet<SystemSetting> SystemSettings { get; }
+        DbSet<AuditLog> AuditLogs { get; }
+        DbSet<ErrorLog> ErrorLogs { get; }
+
+        public DbSet<MonthlyCostRow> MonthlyCostRows { get; }
+        public DbSet<CostsByEventTypeRow> CostsByEventTypeRows { get; }
+        public DbSet<RepairHistoryRow> RepairHistoryRows { get; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }

@@ -104,4 +104,31 @@ namespace WheelsAndBills.Application.DTOs.Admin.DTO
         string Value
     );
 
+    public record AuditLogDto(
+        Guid Id,
+        Guid? UserId,
+        string Method,
+        string Path,
+        int StatusCode,
+        DateTime CreatedAt
+    );
+
+    public record ErrorLogDto(
+        Guid Id,
+        Guid? UserId,
+        string Source,
+        string Message,
+        string? Path,
+        string? Method,
+        int? StatusCode,
+        DateTime CreatedAt
+    );
+
+    public record PagedResult<T>(
+        IReadOnlyList<T> Items,
+        int Total,
+        int Page,
+        int PageSize
+    );
+
 }

@@ -57,6 +57,7 @@ namespace WheelsAndBills.Application.Features.Vehicles.UserVehicles
                     _db.VehicleMileage
                         .Where(m => m.VehicleId == v.Id)
                         .OrderByDescending(m => m.Date)
+                        .ThenByDescending(m => m.Mileage)
                         .Select(m => new VehicleMileageDTO(
                             m.Id,
                             m.Mileage,

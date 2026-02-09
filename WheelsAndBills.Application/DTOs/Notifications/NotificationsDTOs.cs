@@ -24,7 +24,18 @@ namespace WheelsAndBills.Application.DTOs.Notifications
             string Title,
             string Message,
             DateTime ScheduledAt,
-            bool IsSent
+            bool IsSent,
+            bool IsRead
+        );
+
+        public record NotificationPreferenceDTO(
+            Guid NotificationTypeId,
+            string NotificationTypeCode,
+            bool IsEnabled
+        );
+
+        public record UpdateNotificationPreferencesDTO(
+            IReadOnlyList<NotificationPreferenceDTO> Preferences
         );
 
         public record CreateNotificationTypeDTO(string Code);

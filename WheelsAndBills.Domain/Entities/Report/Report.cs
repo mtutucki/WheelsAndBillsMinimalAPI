@@ -11,6 +11,7 @@ namespace WheelsAndBills.Domain.Entities.Report
 
         public ApplicationUser User { get; set; } = null!;
         public ReportDefinition Definition { get; set; } = null!;
+        public ICollection<ReportParameter> Parameters { get; set; } = new List<ReportParameter>();
     }
 
 }

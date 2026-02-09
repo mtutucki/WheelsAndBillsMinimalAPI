@@ -57,6 +57,14 @@ namespace WheelsAndBills.Application.DTOs.Events
             decimal TotalPrice
         );
 
+        public record FuelingSummaryRow(
+            int Year,
+            int Month,
+            decimal TotalLiters,
+            decimal TotalCost,
+            decimal AvgPricePerLiter
+        );
+
         public record CreatePartDTO(string Name);
 
         public record UpdatePartDTO(string Name);

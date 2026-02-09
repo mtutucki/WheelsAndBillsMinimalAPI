@@ -1,14 +1,18 @@
-﻿using WheelsAndBills.Domain.Entities.Events;
+using WheelsAndBills.Domain.Entities.Events;
 using WheelsAndBills.Domain.Entities.Vehicles;
 using WheelsAndBills.Application.DTOs.Events;
 using WheelsAndBills.Application.Abstractions.Persistence;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
+using CostEntity = WheelsAndBills.Domain.Entities.Cost.Cost;
+using CostTypeEntity = WheelsAndBills.Domain.Entities.Cost.CostType;
 
 namespace WheelsAndBills.Application.Helpers.Events
 {
     public class VehicleEventDetailsHandler
     {
+        private const string DefaultCostTypeName = "GENERAL";
+
         public static async Task Handle(
         CreateMyVehicleEventDTO request,
         Guid vehicleEventId,
@@ -16,12 +20,12 @@ namespace WheelsAndBills.Application.Helpers.Events
         {
             if (request.EventTypeId == Guid.Parse("D048C102-BD39-4280-9755-7DA64E418AFF"))
             {
-                HandleFueling(request, vehicleEventId, db);
+                await HandleFuelingAsync(request, vehicleEventId, db);
             }
 
             if (request.EventTypeId == Guid.Parse("8FD1DFE4-E0DE-43C1-A74D-DD2E0ECC6D07") || request.EventTypeId == Guid.Parse("FAC15ACE-3DC4-4E64-A515-A7A323622A9F"))
             {
-                HandleService(request, vehicleEventId, db);
+                await HandleServiceAsync(request, vehicleEventId, db);
             }
 
             if (request.EventTypeId == Guid.Parse("31517083-E941-4C82-A86A-89197BB569B9") || request.EventTypeId == Guid.Parse("03C6CDF1-6C5A-4DDB-8C41-402DE7B5B969"))
@@ -30,7 +34,7 @@ namespace WheelsAndBills.Application.Helpers.Events
             }
         }
 
-        private static void HandleFueling(
+        private static async Task HandleFuelingAsync(
             CreateMyVehicleEventDTO request,
             Guid vehicleEventId,
             IAppDbContext db)
@@ -52,9 +56,11 @@ namespace WheelsAndBills.Application.Helpers.Events
                 Liters = liters,
                 TotalPrice = totalPrice
             });
+
+            await UpsertCostAsync(db, vehicleEventId, totalPrice);
         }
 
-        private static void HandleService(
+        private static async Task HandleServiceAsync(
             CreateMyVehicleEventDTO request,
             Guid vehicleEventId,
             IAppDbContext db)
@@ -62,7 +68,6 @@ namespace WheelsAndBills.Application.Helpers.Events
             if (request.Data is null)
                 throw new InvalidOperationException("Service data missing");
 
-            // ServiceEvent (warsztat)
             ServiceEvent? serviceEvent = null;
 
             if (request.Data.TryGetValue("workshopId", out var workshopEl))
@@ -79,25 +84,27 @@ namespace WheelsAndBills.Application.Helpers.Events
                 db.ServiceEvents.Add(serviceEvent);
             }
 
-            // RepairEvent (robocizna / części)
             RepairEvent? repairEvent = null;
+            decimal laborCost = 0;
+            decimal partsSum = 0;
 
             if (request.Data.TryGetValue("laborCost", out var laborEl) ||
                 request.Data.TryGetValue("parts", out _))
             {
+                laborCost = request.Data.TryGetValue("laborCost", out laborEl)
+                    ? GetDecimal.GetDecimalByJsonElement(laborEl)
+                    : 0;
+
                 repairEvent = new RepairEvent
                 {
                     Id = Guid.NewGuid(),
                     VehicleEventId = vehicleEventId,
-                    LaborCost = request.Data.TryGetValue("laborCost", out laborEl)
-                        ? GetDecimal.GetDecimalByJsonElement(laborEl)
-                        : 0
+                    LaborCost = laborCost
                 };
 
                 db.RepairEvents.Add(repairEvent);
             }
 
-            // EventParts (części)
             if (request.Data.TryGetValue("parts", out var partsEl) &&
                 partsEl.ValueKind == JsonValueKind.Array)
             {
@@ -114,8 +121,14 @@ namespace WheelsAndBills.Application.Helpers.Events
                         PartId = partId,
                         Price = price
                     });
+
+                    partsSum += price;
                 }
             }
+
+            var total = laborCost + partsSum;
+            if (total > 0)
+                await UpsertCostAsync(db, vehicleEventId, total);
         }
 
 
@@ -146,7 +159,44 @@ namespace WheelsAndBills.Application.Helpers.Events
             vehicle.StatusId = statusId;
         }
 
+        private static async Task UpsertCostAsync(
+            IAppDbContext db,
+            Guid vehicleEventId,
+            decimal amount)
+        {
+            var cost = await db.Costs.FirstOrDefaultAsync(c => c.VehicleEventId == vehicleEventId);
+            if (cost is null)
+            {
+                var costTypeId = await GetDefaultCostTypeIdAsync(db);
+                cost = new CostEntity
+                {
+                    Id = Guid.NewGuid(),
+                    VehicleEventId = vehicleEventId,
+                    CostTypeId = costTypeId,
+                    Amount = amount
+                };
+                db.Costs.Add(cost);
+            }
+            else
+            {
+                cost.Amount = amount;
+            }
+        }
 
+        private static async Task<Guid> GetDefaultCostTypeIdAsync(IAppDbContext db)
+        {
+            var costType = await db.CostTypes.FirstOrDefaultAsync(c => c.Name == DefaultCostTypeName);
+            if (costType is not null) return costType.Id;
+
+            costType = new CostTypeEntity
+            {
+                Id = Guid.NewGuid(),
+                Name = DefaultCostTypeName
+            };
+
+            db.CostTypes.Add(costType);
+            await db.SaveChangesAsync();
+            return costType.Id;
+        }
     }
 }
-

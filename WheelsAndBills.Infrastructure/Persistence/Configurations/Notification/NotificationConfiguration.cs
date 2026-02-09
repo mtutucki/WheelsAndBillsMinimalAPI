@@ -19,6 +19,9 @@ namespace Infrastructure.Persistence.Configurations.Notifications
                 .IsRequired()
                 .HasMaxLength(1000);
 
+            builder.Property(n => n.IsRead)
+                .HasDefaultValue(false);
+
             builder.HasOne(n => n.User)
                 .WithMany()
                 .HasForeignKey(n => n.UserId)
