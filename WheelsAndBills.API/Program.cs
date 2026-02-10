@@ -104,9 +104,15 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+var connectionString = builder.Configuration.GetConnectionString("Default");
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    connectionString = "Server=localhost;Database=WheelsAndBillsAPI;Trusted_Connection=True;TrustServerCertificate=True";
+}
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
-        builder.Configuration.GetConnectionString("Default"),
+        connectionString,
         sql => sql.MigrationsAssembly(typeof(Program).Assembly.FullName)));
 
 builder.Services.AddScoped<IAppDbContext>(sp => sp.GetRequiredService<AppDbContext>());
@@ -214,7 +220,7 @@ api.MapReportEndpoints();
 api.MapDashboardEndpoints();
 api.MapAnalyticsEndpoints();
 api.MapErrorsEndpoints();
-app.MapReportGeneration();
+api.MapReportGeneration();
 
 app.Run();
 

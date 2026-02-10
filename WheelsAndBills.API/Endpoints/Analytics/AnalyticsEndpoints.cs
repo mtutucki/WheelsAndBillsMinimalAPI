@@ -18,10 +18,14 @@ namespace WheelsAndBills.API.Endpoints.Analytics
                 .RequireAuthorization();
 
             analytics.MapGetMileageSeries();
+            analytics.MapGetMileageList();
             analytics.MapGetEventStatsSeries();
             analytics.MapGetEventList();
+            analytics.MapGetFuelStatsSeries();
+            analytics.MapGetFuelList();
             analytics.MapExportMileage();
             analytics.MapExportEvents();
+            analytics.MapExportFuel();
 
             return app;
         }
@@ -170,6 +174,152 @@ namespace WheelsAndBills.API.Endpoints.Analytics
                             .Sum() ?? 0m,
                         e.Description
                     ))
+                    .ToListAsync(cancellationToken);
+
+                return Results.Ok(items);
+            });
+        }
+
+        private static RouteHandlerBuilder MapGetFuelStatsSeries(this RouteGroupBuilder group)
+        {
+            return group.MapGet("/fuel", [Authorize] async (
+                Guid vehicleId,
+                DateTime? from,
+                DateTime? to,
+                ClaimsPrincipal user,
+                IAppDbContext db,
+                CancellationToken cancellationToken) =>
+            {
+                var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
+                if (userId == Guid.Empty)
+                    return Results.Unauthorized();
+
+                var ownsVehicle = await db.Vehicles
+                    .AnyAsync(v => v.Id == vehicleId && v.UserId == userId && v.StatusId != DeletedStatusId, cancellationToken);
+
+                if (!ownsVehicle)
+                    return Results.NotFound();
+
+                var query = from f in db.FuelingEvents.AsNoTracking()
+                            join e in db.VehicleEvents.AsNoTracking() on f.VehicleEventId equals e.Id
+                            where e.VehicleId == vehicleId
+                            select new
+                            {
+                                e.EventDate,
+                                e.Mileage,
+                                f.Liters,
+                                f.TotalPrice
+                            };
+
+                if (from.HasValue)
+                    query = query.Where(x => x.EventDate >= from.Value);
+
+                if (to.HasValue)
+                    query = query.Where(x => x.EventDate <= to.Value);
+
+                var rows = await query
+                    .OrderBy(x => x.EventDate)
+                    .ThenBy(x => x.Mileage)
+                    .Select(x => new FuelRow(
+                        x.EventDate.Date,
+                        x.Mileage,
+                        x.Liters,
+                        x.TotalPrice
+                    ))
+                    .ToListAsync(cancellationToken);
+
+                var points = BuildFuelPoints(rows);
+
+                return Results.Ok(points);
+            });
+        }
+
+        private static RouteHandlerBuilder MapGetFuelList(this RouteGroupBuilder group)
+        {
+            return group.MapGet("/fuel/list", [Authorize] async (
+                Guid vehicleId,
+                DateTime? from,
+                DateTime? to,
+                ClaimsPrincipal user,
+                IAppDbContext db,
+                CancellationToken cancellationToken) =>
+            {
+                var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
+                if (userId == Guid.Empty)
+                    return Results.Unauthorized();
+
+                var ownsVehicle = await db.Vehicles
+                    .AnyAsync(v => v.Id == vehicleId && v.UserId == userId && v.StatusId != DeletedStatusId, cancellationToken);
+
+                if (!ownsVehicle)
+                    return Results.NotFound();
+
+                var query = from f in db.FuelingEvents.AsNoTracking()
+                            join e in db.VehicleEvents.AsNoTracking() on f.VehicleEventId equals e.Id
+                            where e.VehicleId == vehicleId
+                            select new
+                            {
+                                e.EventDate,
+                                e.Mileage,
+                                f.Liters,
+                                f.TotalPrice
+                            };
+
+                if (from.HasValue)
+                    query = query.Where(x => x.EventDate >= from.Value);
+
+                if (to.HasValue)
+                    query = query.Where(x => x.EventDate <= to.Value);
+
+                var items = await query
+                    .OrderByDescending(x => x.EventDate)
+                    .ThenByDescending(x => x.Mileage)
+                    .Select(x => new FuelListItemDto(
+                        x.EventDate.Date,
+                        x.Mileage,
+                        x.Liters,
+                        x.TotalPrice,
+                        x.Liters > 0 ? x.TotalPrice / x.Liters : 0m
+                    ))
+                    .ToListAsync(cancellationToken);
+
+                return Results.Ok(items);
+            });
+        }
+
+        private static RouteHandlerBuilder MapGetMileageList(this RouteGroupBuilder group)
+        {
+            return group.MapGet("/mileage/list", [Authorize] async (
+                Guid vehicleId,
+                DateTime? from,
+                DateTime? to,
+                ClaimsPrincipal user,
+                IAppDbContext db,
+                CancellationToken cancellationToken) =>
+            {
+                var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
+                if (userId == Guid.Empty)
+                    return Results.Unauthorized();
+
+                var ownsVehicle = await db.Vehicles
+                    .AnyAsync(v => v.Id == vehicleId && v.UserId == userId && v.StatusId != DeletedStatusId, cancellationToken);
+
+                if (!ownsVehicle)
+                    return Results.NotFound();
+
+                var query = db.VehicleMileage
+                    .AsNoTracking()
+                    .Where(m => m.VehicleId == vehicleId);
+
+                if (from.HasValue)
+                    query = query.Where(m => m.Date >= from.Value);
+
+                if (to.HasValue)
+                    query = query.Where(m => m.Date <= to.Value);
+
+                var items = await query
+                    .OrderByDescending(m => m.Date)
+                    .Select(m => new MileageListItemDto(m.Date, m.Mileage))
                     .ToListAsync(cancellationToken);
 
                 return Results.Ok(items);
@@ -350,6 +500,94 @@ namespace WheelsAndBills.API.Endpoints.Analytics
             });
         }
 
+        private static RouteHandlerBuilder MapExportFuel(this RouteGroupBuilder group)
+        {
+            return group.MapPost("/fuel/export", [Authorize] async (
+                FuelExportRequest request,
+                ClaimsPrincipal user,
+                IAppDbContext db,
+                CancellationToken cancellationToken) =>
+            {
+                var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
+                if (userId == Guid.Empty)
+                    return Results.Unauthorized();
+
+                var ownsVehicle = await db.Vehicles
+                    .AnyAsync(v => v.Id == request.VehicleId && v.UserId == userId && v.StatusId != DeletedStatusId, cancellationToken);
+
+                if (!ownsVehicle)
+                    return Results.NotFound();
+
+                var query = from f in db.FuelingEvents.AsNoTracking()
+                            join e in db.VehicleEvents.AsNoTracking() on f.VehicleEventId equals e.Id
+                            where e.VehicleId == request.VehicleId
+                            select new
+                            {
+                                e.EventDate,
+                                e.Mileage,
+                                f.Liters,
+                                f.TotalPrice
+                            };
+
+                if (request.From.HasValue)
+                    query = query.Where(x => x.EventDate >= request.From.Value);
+
+                if (request.To.HasValue)
+                    query = query.Where(x => x.EventDate <= request.To.Value);
+
+                var rows = await query
+                    .OrderBy(x => x.EventDate)
+                    .ThenBy(x => x.Mileage)
+                    .Select(x => new FuelRow(
+                        x.EventDate.Date,
+                        x.Mileage,
+                        x.Liters,
+                        x.TotalPrice
+                    ))
+                    .ToListAsync(cancellationToken);
+
+                var points = BuildFuelPoints(rows);
+
+                using var workbook = new XLWorkbook();
+                var sheet = workbook.Worksheets.Add("Paliwo");
+                sheet.Cell(1, 1).Value = "Data";
+                sheet.Cell(1, 2).Value = "Przebieg (km)";
+                sheet.Cell(1, 3).Value = "Dystans (km)";
+                sheet.Cell(1, 4).Value = "Litry";
+                sheet.Cell(1, 5).Value = "Koszt (zł)";
+                sheet.Cell(1, 6).Value = "Cena/L (zł)";
+                sheet.Cell(1, 7).Value = "Spalanie (l/100km)";
+                sheet.Cell(1, 8).Value = "Koszt/100km (zł)";
+
+                for (var i = 0; i < points.Count; i++)
+                {
+                    var row = points[i];
+                    sheet.Cell(i + 2, 1).Value = row.Date.ToString("yyyy-MM-dd");
+                    sheet.Cell(i + 2, 2).Value = row.Mileage;
+                    sheet.Cell(i + 2, 3).Value = row.Distance;
+                    sheet.Cell(i + 2, 4).Value = row.Liters;
+                    sheet.Cell(i + 2, 5).Value = row.TotalCost;
+                    sheet.Cell(i + 2, 6).Value = row.PricePerLiter;
+                    sheet.Cell(i + 2, 7).Value = row.ConsumptionPer100;
+                    sheet.Cell(i + 2, 8).Value = row.CostPer100;
+                }
+
+                sheet.Columns().AdjustToContents();
+
+                TryAddChartImage(sheet, request.ChartImageBase64, points.Count + 3, 1);
+
+                using var stream = new MemoryStream();
+                workbook.SaveAs(stream);
+                stream.Position = 0;
+
+                var fileName = $"analiza-paliwo-{DateTime.UtcNow:yyyy-MM-dd}.xlsx";
+                return Results.File(
+                    stream.ToArray(),
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    fileName);
+            });
+        }
+
         private static void TryAddChartImage(IXLWorksheet sheet, string? dataUrl, int row, int column)
         {
             if (string.IsNullOrWhiteSpace(dataUrl))
@@ -376,6 +614,45 @@ namespace WheelsAndBills.API.Endpoints.Analytics
                 .WithSize(640, 320);
         }
 
+        private static List<FuelStatsPointDto> BuildFuelPoints(
+            IEnumerable<FuelRow> rows)
+        {
+            FuelRow? prev = null;
+            var points = new List<FuelStatsPointDto>();
+
+            foreach (var row in rows)
+            {
+                if (row.Mileage <= 0 || row.Liters <= 0)
+                    continue;
+
+                if (prev is not null)
+                {
+                    var distance = row.Mileage - prev.Mileage;
+                    if (distance > 0)
+                    {
+                        var pricePerLiter = row.TotalCost / row.Liters;
+                        var consumptionPer100 = (row.Liters / distance) * 100m;
+                        var costPer100 = (row.TotalCost / distance) * 100m;
+
+                        points.Add(new FuelStatsPointDto(
+                            row.Date,
+                            row.Mileage,
+                            distance,
+                            row.Liters,
+                            row.TotalCost,
+                            pricePerLiter,
+                            consumptionPer100,
+                            costPer100
+                        ));
+                    }
+                }
+
+                prev = row;
+            }
+
+            return points;
+        }
+
         private sealed record MileageExportRequest(
             Guid VehicleId,
             DateTime? From,
@@ -388,5 +665,17 @@ namespace WheelsAndBills.API.Endpoints.Analytics
             DateTime? From,
             DateTime? To,
             string? ChartImageBase64);
+
+        private sealed record FuelExportRequest(
+            Guid VehicleId,
+            DateTime? From,
+            DateTime? To,
+            string? ChartImageBase64);
+
+        private sealed record FuelRow(
+            DateTime Date,
+            int Mileage,
+            decimal Liters,
+            decimal TotalCost);
     }
 }
