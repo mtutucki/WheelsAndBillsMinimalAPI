@@ -5,16 +5,17 @@ using WheelsAndBills.Application.DTOs.Admin.DTO;
 
 namespace WheelsAndBills.API.Endpoints.Account
 {
-    public static class GetExperienceLevels
+    public static class GetDictionaryItemsByCode
     {
-        public static RouteHandlerBuilder MapGetExperienceLevels(this RouteGroupBuilder app)
+        public static RouteHandlerBuilder MapGetDictionaryItemsByCode(this RouteGroupBuilder app)
         {
-            return app.MapGet("/experience-levels", [Authorize] async (
+            return app.MapGet("/dictionaries/{code}/items", [Authorize] async (
+                string code,
                 IAppDbContext db,
                 CancellationToken cancellationToken) =>
             {
                 var dictionaryId = await db.Dictionaries
-                    .Where(d => d.Code == "EXPERIENCE_LEVEL")
+                    .Where(d => d.Code == code)
                     .Select(d => d.Id)
                     .FirstOrDefaultAsync(cancellationToken);
 

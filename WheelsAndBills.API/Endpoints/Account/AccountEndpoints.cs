@@ -11,6 +11,7 @@ namespace WheelsAndBills.API.Endpoints.Account
 
             account.MapGetMe();
             account.MapGetExperienceLevels();
+            account.MapGetDictionaryItemsByCode();
             account.MapUploadAvatar();
             account.MapUpdateMe();
             account.MapChangePassword();

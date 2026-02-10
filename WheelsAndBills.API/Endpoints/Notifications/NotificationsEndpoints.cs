@@ -13,7 +13,7 @@ namespace WheelsAndBills.API.Endpoints.Notifications
                 .RequireAuthorization();
 
             var notificationsTypes = app
-                .MapGroup("/notifications-types")
+                .MapGroup("/notification-types")
                 .WithTags("Notifications types")
                 .RequireAuthorization();
 

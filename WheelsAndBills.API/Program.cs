@@ -56,6 +56,7 @@ using WheelsAndBills.API.Endpoints.Analytics;
 using QuestPDF.Infrastructure;
 using WheelsAndBills.API.Endpoints.Errors;
 using WheelsAndBills.API.Middleware;
+using WheelsAndBills.API.BackgroundServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -186,10 +187,13 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddAuthorization();
+builder.Services.AddHostedService<ServiceReminderNotificationsWorker>();
 
 var app = builder.Build();
 
 await SeedRolesAsync(app.Services);
+await SeedNotificationTypesAsync(app.Services);
+await SeedNotificationTypeDictionaryAsync(app.Services);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -235,4 +239,80 @@ static async Task SeedRolesAsync(IServiceProvider services)
         if (!await roleManager.RoleExistsAsync(role))
             await roleManager.CreateAsync(new IdentityRole<Guid>(role));
     }
+}
+
+static async Task SeedNotificationTypesAsync(IServiceProvider services)
+{
+    using var scope = services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    var codes = new[] { "INSURANCE_EXPIRY", "SERVICE_REMINDER", "REPORT_READY", "GENERAL" };
+    var existing = await db.NotificationTypes
+        .Where(t => codes.Contains(t.Code))
+        .Select(t => t.Code)
+        .ToListAsync();
+
+    var missing = codes.Except(existing).ToList();
+    if (missing.Count == 0)
+        return;
+
+    foreach (var code in missing)
+    {
+        db.NotificationTypes.Add(new WheelsAndBills.Domain.Entities.Notification.NotificationType
+        {
+            Id = Guid.NewGuid(),
+            Code = code
+        });
+    }
+
+    await db.SaveChangesAsync();
+}
+
+static async Task SeedNotificationTypeDictionaryAsync(IServiceProvider services)
+{
+    using var scope = services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    var dictionary = await db.Dictionaries
+        .FirstOrDefaultAsync(d => d.Code == "NOTIFICATION_TYPES");
+
+    if (dictionary is null)
+    {
+        dictionary = new WheelsAndBills.Domain.Entities.Admin.Dictionary
+        {
+            Id = Guid.NewGuid(),
+            Code = "NOTIFICATION_TYPES"
+        };
+        db.Dictionaries.Add(dictionary);
+        await db.SaveChangesAsync();
+    }
+
+    var items = new[]
+    {
+        new { Key = "INSURANCE_EXPIRY", Value = "Koniec polisy" },
+        new { Key = "SERVICE_REMINDER", Value = "Przypomnienie serwisowe" },
+        new { Key = "REPORT_READY", Value = "Raport gotowy" },
+        new { Key = "GENERAL", Value = "Ogólne" }
+    };
+
+    var existingKeys = await db.DictionaryItems
+        .Where(i => i.DictionaryId == dictionary.Id && i.Key != null)
+        .Select(i => i.Key!)
+        .ToListAsync();
+
+    foreach (var item in items)
+    {
+        if (existingKeys.Contains(item.Key))
+            continue;
+
+        db.DictionaryItems.Add(new WheelsAndBills.Domain.Entities.Admin.DictionaryItem
+        {
+            Id = Guid.NewGuid(),
+            DictionaryId = dictionary.Id,
+            Key = item.Key,
+            Value = item.Value
+        });
+    }
+
+    await db.SaveChangesAsync();
 }

@@ -357,6 +357,13 @@ namespace WheelsAndBills.API.Endpoints.Reports.Reports
                     FilePath = xlsxPath
                 });
 
+                await TryCreateReportReadyNotificationAsync(
+                    db,
+                    userId,
+                    vehicleId,
+                    report.DefinitionCode,
+                    cancellationToken);
+
                 await db.SaveChangesAsync(cancellationToken);
 
                 return Results.Ok(new { PdfPath = pdfPath, ExcelPath = xlsxPath });
@@ -395,6 +402,92 @@ namespace WheelsAndBills.API.Endpoints.Reports.Reports
             }
 
             return true;
+        }
+
+        private static async Task TryCreateReportReadyNotificationAsync(
+            IAppDbContext db,
+            Guid userId,
+            Guid vehicleId,
+            string reportCode,
+            CancellationToken ct)
+        {
+            var typeId = await EnsureNotificationTypeAsync(db, "REPORT_READY", ct);
+            if (!await IsNotificationEnabledAsync(db, userId, typeId, ct))
+                return;
+
+            var today = DateTime.UtcNow.Date;
+            var exists = await db.Notifications
+                .AnyAsync(n =>
+                    n.UserId == userId &&
+                    n.VehicleId == vehicleId &&
+                    n.NotificationTypeId == typeId &&
+                    n.ScheduledAt >= today,
+                    ct);
+            if (exists)
+                return;
+
+            var reportLabel = reportCode switch
+            {
+                "MONTHLY_COSTS" => "koszty miesięczne",
+                "COSTS_BY_EVENT_TYPE" => "koszty wg typu",
+                "REPAIRS_HISTORY" => "historia napraw",
+                _ => reportCode
+            };
+
+            db.Notifications.Add(new WheelsAndBills.Domain.Entities.Notification.Notification
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                VehicleId = vehicleId,
+                NotificationTypeId = typeId,
+                Title = "Raport gotowy",
+                Message = $"Twój raport \"{reportLabel}\" jest gotowy do pobrania.",
+                ScheduledAt = DateTime.UtcNow,
+                IsSent = false,
+                IsRead = false
+            });
+        }
+
+        private static async Task<Guid?> EnsureNotificationTypeAsync(
+            IAppDbContext db,
+            string code,
+            CancellationToken ct)
+        {
+            var existing = await db.NotificationTypes
+                .Where(t => t.Code == code)
+                .Select(t => new { t.Id })
+                .FirstOrDefaultAsync(ct);
+
+            if (existing is not null)
+                return existing.Id;
+
+            var type = new WheelsAndBills.Domain.Entities.Notification.NotificationType
+            {
+                Id = Guid.NewGuid(),
+                Code = code
+            };
+
+            db.NotificationTypes.Add(type);
+            await db.SaveChangesAsync(ct);
+
+            return type.Id;
+        }
+
+        private static async Task<bool> IsNotificationEnabledAsync(
+            IAppDbContext db,
+            Guid userId,
+            Guid? notificationTypeId,
+            CancellationToken ct)
+        {
+            if (notificationTypeId is null)
+                return false;
+
+            var pref = await db.NotificationPreferences
+                .Where(p => p.UserId == userId && p.NotificationTypeId == notificationTypeId)
+                .Select(p => (bool?)p.IsEnabled)
+                .FirstOrDefaultAsync(ct);
+
+            return pref ?? true;
         }
 
         private static void GenerateMonthlyCostsPdf(
