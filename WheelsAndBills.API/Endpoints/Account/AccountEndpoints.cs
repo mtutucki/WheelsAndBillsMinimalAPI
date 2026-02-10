@@ -10,6 +10,8 @@ namespace WheelsAndBills.API.Endpoints.Account
                 .RequireAuthorization();
 
             account.MapGetMe();
+            account.MapGetExperienceLevels();
+            account.MapUploadAvatar();
             account.MapUpdateMe();
             account.MapChangePassword();
             account.MapDeleteAccount();

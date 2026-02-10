@@ -9,6 +9,7 @@ namespace WheelsAndBills.API.Endpoints.Account
         public static RouteHandlerBuilder MapGetMe(this RouteGroupBuilder app)
         {
             return app.MapGet("/me", [Authorize] async (
+                HttpRequest request,
                 ClaimsPrincipal user,
                 IAccountService accountService,
                 CancellationToken cancellationToken) =>
@@ -24,6 +25,12 @@ namespace WheelsAndBills.API.Endpoints.Account
 
                 if (me is null)
                     return Results.NotFound();
+
+                if (!string.IsNullOrWhiteSpace(me.AvatarUrl) && me.AvatarUrl.StartsWith("/"))
+                {
+                    var baseUrl = $"{request.Scheme}://{request.Host}";
+                    me = me with { AvatarUrl = $"{baseUrl}{me.AvatarUrl}" };
+                }
 
                 return Results.Ok(me);
             });
