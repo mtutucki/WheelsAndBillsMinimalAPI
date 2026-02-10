@@ -30,7 +30,9 @@ namespace WheelsAndBills.Application.Features.Vehicles.VehiclesAdmin
                     v.BrandId,
                     v.ModelId,
                     v.TypeId,
-                    v.StatusId
+                    v.StatusId,
+                    v.AvatarFileId,
+                    v.InsuranceExpiryDate
                 ))
                 .ToListAsync(cancellationToken);
         }
@@ -47,7 +49,9 @@ namespace WheelsAndBills.Application.Features.Vehicles.VehiclesAdmin
                     v.BrandId,
                     v.ModelId,
                     v.TypeId,
-                    v.StatusId
+                    v.StatusId,
+                    v.AvatarFileId,
+                    v.InsuranceExpiryDate
                 ))
                 .FirstOrDefaultAsync(cancellationToken);
         }
@@ -62,6 +66,8 @@ namespace WheelsAndBills.Application.Features.Vehicles.VehiclesAdmin
             if (vinExists)
                 return ServiceResult<GetVehicleDTO>.Fail(ErrorVinDuplicate);
 
+            var insuranceExpiryDate = NormalizeInsuranceDate(request.InsuranceExpiryDate);
+
             var vehicle = new Vehicle
             {
                 Id = Guid.NewGuid(),
@@ -71,7 +77,9 @@ namespace WheelsAndBills.Application.Features.Vehicles.VehiclesAdmin
                 BrandId = request.BrandId,
                 ModelId = request.ModelId,
                 TypeId = request.TypeId,
-                StatusId = request.StatusId
+                StatusId = request.StatusId,
+                AvatarFileId = request.AvatarFileId,
+                InsuranceExpiryDate = insuranceExpiryDate
             };
 
             _db.Vehicles.Add(vehicle);
@@ -85,7 +93,9 @@ namespace WheelsAndBills.Application.Features.Vehicles.VehiclesAdmin
                 vehicle.BrandId,
                 vehicle.ModelId,
                 vehicle.TypeId,
-                vehicle.StatusId
+                vehicle.StatusId,
+                vehicle.AvatarFileId,
+                vehicle.InsuranceExpiryDate
             ));
         }
 
@@ -106,6 +116,8 @@ namespace WheelsAndBills.Application.Features.Vehicles.VehiclesAdmin
             vehicle.ModelId = request.ModelId;
             vehicle.TypeId = request.TypeId;
             vehicle.StatusId = request.StatusId;
+            vehicle.AvatarFileId = request.AvatarFileId;
+            vehicle.InsuranceExpiryDate = NormalizeInsuranceDate(request.InsuranceExpiryDate);
 
             await _db.SaveChangesAsync(cancellationToken);
 
@@ -117,7 +129,9 @@ namespace WheelsAndBills.Application.Features.Vehicles.VehiclesAdmin
                 vehicle.BrandId,
                 vehicle.ModelId,
                 vehicle.TypeId,
-                vehicle.StatusId
+                vehicle.StatusId,
+                vehicle.AvatarFileId,
+                vehicle.InsuranceExpiryDate
             ));
         }
 
@@ -131,6 +145,15 @@ namespace WheelsAndBills.Application.Features.Vehicles.VehiclesAdmin
             await _db.SaveChangesAsync(cancellationToken);
 
             return ServiceResult.Ok();
+        }
+
+        private static DateTime? NormalizeInsuranceDate(DateTime? date)
+        {
+            if (!date.HasValue)
+                return null;
+
+            var normalized = date.Value.Date;
+            return normalized == DateTime.MinValue ? null : normalized;
         }
     }
 }

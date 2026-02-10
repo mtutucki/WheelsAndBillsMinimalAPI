@@ -66,11 +66,35 @@ namespace WheelsAndBills.Application.Features.Account
                     u.FirstName,
                     u.LastName,
                     u.Email,
+                    u.AvatarUrl,
+                    u.AvatarFileId,
+                    u.ExperienceLevelId,
+                    u.BirthDate,
+                    u.Country,
+                    u.City,
                     u.CreatedAt
                 })
                 .FirstOrDefaultAsync(cancellationToken);
 
             if (user is null) return null;
+
+            string? experienceLevelValue = null;
+            if (user.ExperienceLevelId.HasValue)
+            {
+                experienceLevelValue = await _db.DictionaryItems
+                    .Where(i => i.Id == user.ExperienceLevelId.Value)
+                    .Select(i => i.Value)
+                    .FirstOrDefaultAsync(cancellationToken);
+            }
+
+            string? avatarUrl = user.AvatarUrl;
+            if (user.AvatarFileId.HasValue)
+            {
+                avatarUrl = await _db.FileResources
+                    .Where(f => f.Id == user.AvatarFileId.Value)
+                    .Select(f => f.FilePath)
+                    .FirstOrDefaultAsync(cancellationToken);
+            }
 
             var identityUser = await _userManager.FindByIdAsync(user.Id.ToString());
             var roles = identityUser is null
@@ -82,6 +106,13 @@ namespace WheelsAndBills.Application.Features.Account
                 user.FirstName,
                 user.LastName,
                 user.Email!,
+                avatarUrl,
+                user.AvatarFileId,
+                user.ExperienceLevelId,
+                experienceLevelValue,
+                user.BirthDate,
+                user.Country,
+                user.City,
                 user.CreatedAt,
                 roles
             );
@@ -101,6 +132,53 @@ namespace WheelsAndBills.Application.Features.Account
 
             entity.FirstName = request.FirstName.Trim();
             entity.LastName = request.LastName.Trim();
+            if (request.AvatarFileId.HasValue)
+            {
+                var fileExists = await _db.FileResources.AnyAsync(
+                    f => f.Id == request.AvatarFileId.Value,
+                    cancellationToken);
+
+                if (!fileExists)
+                    return ServiceResult.Fail("AvatarFileNotFound");
+
+                entity.AvatarFileId = request.AvatarFileId;
+            }
+            else
+            {
+                entity.AvatarFileId = null;
+            }
+
+            if (request.ExperienceLevelId is null)
+            {
+                entity.ExperienceLevelId = null;
+            }
+            else
+            {
+                var dictionaryId = await _db.Dictionaries
+                    .Where(d => d.Code == "EXPERIENCE_LEVEL")
+                    .Select(d => d.Id)
+                    .FirstOrDefaultAsync(cancellationToken);
+
+                if (dictionaryId == Guid.Empty)
+                    return ServiceResult.Fail("ExperienceLevelDictionaryNotFound");
+
+                var exists = await _db.DictionaryItems.AnyAsync(
+                    i => i.Id == request.ExperienceLevelId.Value && i.DictionaryId == dictionaryId,
+                    cancellationToken);
+
+                if (!exists)
+                    return ServiceResult.Fail("InvalidExperienceLevel");
+
+                entity.ExperienceLevelId = request.ExperienceLevelId;
+            }
+
+            entity.BirthDate = request.BirthDate;
+            entity.Country = string.IsNullOrWhiteSpace(request.Country)
+                ? null
+                : request.Country.Trim();
+            entity.City = string.IsNullOrWhiteSpace(request.City)
+                ? null
+                : request.City.Trim();
 
             await _db.SaveChangesAsync(cancellationToken);
             return ServiceResult.Ok();

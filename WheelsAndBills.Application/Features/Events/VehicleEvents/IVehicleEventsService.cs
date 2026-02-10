@@ -13,6 +13,8 @@ namespace WheelsAndBills.Application.Features.Events.VehicleEvents
         Task<ServiceResult> DeleteAsync(Guid id, CancellationToken cancellationToken = default);
 
         Task<ServiceResult<GetVehicleEventDTO>> CreateForUserAsync(Guid userId, CreateMyVehicleEventDTO request, CancellationToken cancellationToken = default);
+        Task<ServiceResult<GetVehicleEventDTO>> UpdateForUserAsync(Guid userId, Guid id, UpdateMyVehicleEventDTO request, CancellationToken cancellationToken = default);
+        Task<GetMyVehicleEventDetailsDTO?> GetDetailsForUserAsync(Guid userId, Guid id, CancellationToken cancellationToken = default);
         Task<ServiceResult> DeleteForUserAsync(Guid userId, Guid id, CancellationToken cancellationToken = default);
     }
 }

@@ -129,6 +129,145 @@ namespace WheelsAndBills.Application.Features.Events.VehicleEvents
             return ServiceResult.Ok();
         }
 
+        public async Task<ServiceResult<GetVehicleEventDTO>> UpdateForUserAsync(Guid userId, Guid id, UpdateMyVehicleEventDTO request, CancellationToken cancellationToken = default)
+        {
+            var ev = await _db.VehicleEvents
+                .Include(e => e.Vehicle)
+                .FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
+
+            if (ev is null)
+                return ServiceResult<GetVehicleEventDTO>.Fail(ErrorNotFound);
+
+            if (ev.Vehicle.UserId != userId)
+                return ServiceResult<GetVehicleEventDTO>.Fail(ErrorForbidden);
+
+            var eventTypeExists = await _db.EventTypes
+                .AnyAsync(et => et.Id == request.EventTypeId, cancellationToken);
+            if (!eventTypeExists)
+                return ServiceResult<GetVehicleEventDTO>.Fail(ErrorEventTypeMissing);
+
+            ev.EventTypeId = request.EventTypeId;
+            ev.EventDate = request.EventDate.Date;
+            ev.Mileage = request.Mileage;
+            ev.Description = request.Description;
+
+            // Remove existing details to avoid stale data when type changes.
+            var fueling = await _db.FuelingEvents
+                .Where(f => f.VehicleEventId == ev.Id)
+                .ToListAsync(cancellationToken);
+            _db.FuelingEvents.RemoveRange(fueling);
+
+            var repairEvents = await _db.RepairEvents
+                .Where(r => r.VehicleEventId == ev.Id)
+                .ToListAsync(cancellationToken);
+            var repairIds = repairEvents.Select(r => r.Id).ToList();
+            if (repairIds.Count > 0)
+            {
+                var parts = await _db.EventParts
+                    .Where(p => repairIds.Contains(p.RepairEventId))
+                    .ToListAsync(cancellationToken);
+                _db.EventParts.RemoveRange(parts);
+            }
+            _db.RepairEvents.RemoveRange(repairEvents);
+
+            var services = await _db.ServiceEvents
+                .Where(s => s.VehicleEventId == ev.Id)
+                .ToListAsync(cancellationToken);
+            _db.ServiceEvents.RemoveRange(services);
+
+            var costs = await _db.Costs
+                .Where(c => c.VehicleEventId == ev.Id)
+                .ToListAsync(cancellationToken);
+            _db.Costs.RemoveRange(costs);
+
+            var createLike = new CreateMyVehicleEventDTO(
+                ev.VehicleId,
+                request.EventTypeId,
+                request.EventDate,
+                request.Mileage,
+                request.Description,
+                request.Data
+            );
+
+            if (request.Data is not null && request.Data.Count > 0)
+            {
+                await VehicleEventDetailsHandler.Handle(createLike, ev.Id, _db);
+            }
+
+            await _db.SaveChangesAsync(cancellationToken);
+
+            return ServiceResult<GetVehicleEventDTO>.Ok(new GetVehicleEventDTO(
+                ev.Id,
+                ev.VehicleId,
+                ev.EventTypeId,
+                ev.EventDate,
+                ev.Mileage,
+                ev.Description
+            ));
+        }
+
+        public async Task<GetMyVehicleEventDetailsDTO?> GetDetailsForUserAsync(Guid userId, Guid id, CancellationToken cancellationToken = default)
+        {
+            var ev = await _db.VehicleEvents
+                .Include(e => e.Vehicle)
+                .FirstOrDefaultAsync(e => e.Id == id && e.Vehicle.UserId == userId, cancellationToken);
+
+            if (ev is null)
+                return null;
+
+            Dictionary<string, object?>? data = null;
+
+            var fueling = await _db.FuelingEvents
+                .AsNoTracking()
+                .FirstOrDefaultAsync(f => f.VehicleEventId == ev.Id, cancellationToken);
+            if (fueling is not null)
+            {
+                data ??= new Dictionary<string, object?>();
+                data["liters"] = fueling.Liters;
+                data["totalCost"] = fueling.TotalPrice;
+            }
+
+            var service = await _db.ServiceEvents
+                .AsNoTracking()
+                .FirstOrDefaultAsync(s => s.VehicleEventId == ev.Id, cancellationToken);
+            if (service is not null)
+            {
+                data ??= new Dictionary<string, object?>();
+                data["workshopId"] = service.WorkshopId;
+            }
+
+            var repair = await _db.RepairEvents
+                .AsNoTracking()
+                .FirstOrDefaultAsync(r => r.VehicleEventId == ev.Id, cancellationToken);
+            if (repair is not null)
+            {
+                data ??= new Dictionary<string, object?>();
+                data["laborCost"] = repair.LaborCost;
+
+                var parts = await _db.EventParts
+                    .Where(p => p.RepairEventId == repair.Id)
+                    .Select(p => new { partId = p.PartId, price = p.Price })
+                    .ToListAsync(cancellationToken);
+
+                if (parts.Count > 0)
+                    data["parts"] = parts;
+            }
+
+            // For status-change events, we don't store historical status; use current status as fallback.
+            data ??= new Dictionary<string, object?>();
+            data["vehicleStatusId"] = ev.Vehicle.StatusId;
+
+            return new GetMyVehicleEventDetailsDTO(
+                ev.Id,
+                ev.VehicleId,
+                ev.EventTypeId,
+                ev.EventDate,
+                ev.Mileage,
+                ev.Description,
+                data
+            );
+        }
+
         public async Task<ServiceResult> DeleteForUserAsync(Guid userId, Guid id, CancellationToken cancellationToken = default)
         {
             var item = await _db.VehicleEvents

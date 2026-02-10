@@ -140,6 +140,30 @@ namespace WheelsAndBills.Application.Features.Vehicles.VehicleNotes
             ));
         }
 
+        public async Task<ServiceResult<GetVehicleNoteDTO>> UpdateForUserAsync(Guid userId, Guid id, UpdateVehicleNoteDTO request, CancellationToken cancellationToken = default)
+        {
+            var note = await _db.VehicleNotes
+                .Include(n => n.Vehicle)
+                .FirstOrDefaultAsync(n => n.Id == id, cancellationToken);
+
+            if (note is null)
+                return ServiceResult<GetVehicleNoteDTO>.Fail(ErrorNotFound);
+
+            if (note.Vehicle.UserId != userId)
+                return ServiceResult<GetVehicleNoteDTO>.Fail(ErrorForbidden);
+
+            note.Content = request.Content;
+            await _db.SaveChangesAsync(cancellationToken);
+
+            return ServiceResult<GetVehicleNoteDTO>.Ok(new GetVehicleNoteDTO(
+                note.Id,
+                note.VehicleId,
+                note.UserId,
+                note.Content,
+                note.CreatedAt
+            ));
+        }
+
         public async Task<ServiceResult> DeleteForUserAsync(Guid userId, Guid id, CancellationToken cancellationToken = default)
         {
             var item = await _db.VehicleNotes

@@ -11,7 +11,9 @@ namespace WheelsAndBills.Application.DTOs.Vehicles
             Guid BrandId,
             Guid ModelId,
             Guid TypeId,
-            Guid StatusId
+            Guid StatusId,
+            Guid? AvatarFileId,
+            DateTime? InsuranceExpiryDate
      );
 
     public record GetVehiclesByUserDTO(
@@ -22,7 +24,10 @@ namespace WheelsAndBills.Application.DTOs.Vehicles
         LookupDTO Brand,
         LookupDTO Model,
         LookupDTO Type,
-        LookupDTO Status
+        LookupDTO Status,
+        Guid? AvatarFileId,
+        string? AvatarUrl,
+        DateTime? InsuranceExpiryDate
     );
 
     public record LookupDTO(Guid Id, string Name);
@@ -61,7 +66,21 @@ namespace WheelsAndBills.Application.DTOs.Vehicles
 
         IReadOnlyList<VehicleMileageDTO> Mileage,
         IReadOnlyList<VehicleEventDTO> Events,
-        IReadOnlyList<VehicleNoteDTO> Notes
+        IReadOnlyList<VehicleNoteDTO> Notes,
+        Guid? AvatarFileId,
+        string? AvatarUrl,
+        DateTime? InsuranceExpiryDate
+    );
+
+    public record UpdateMyVehicleDTO(
+        string Vin,
+        int Year,
+        Guid BrandId,
+        Guid ModelId,
+        Guid TypeId,
+        Guid StatusId,
+        Guid? AvatarFileId,
+        DateTime? InsuranceExpiryDate
     );
 
 
@@ -75,7 +94,9 @@ namespace WheelsAndBills.Application.DTOs.Vehicles
         Guid BrandId,
         Guid ModelId,
         Guid TypeId,
-        Guid StatusId
+        Guid StatusId,
+        Guid? AvatarFileId,
+        DateTime? InsuranceExpiryDate
     );
 
     public record UpdateVehicleDTO(
@@ -84,7 +105,9 @@ namespace WheelsAndBills.Application.DTOs.Vehicles
         Guid BrandId,
         Guid ModelId,
         Guid TypeId,
-        Guid StatusId
+        Guid StatusId,
+        Guid? AvatarFileId,
+        DateTime? InsuranceExpiryDate
     );
 
     public record GetVehicleDTO(
@@ -95,7 +118,9 @@ namespace WheelsAndBills.Application.DTOs.Vehicles
         Guid BrandId,
         Guid ModelId,
         Guid TypeId,
-        Guid StatusId
+        Guid StatusId,
+        Guid? AvatarFileId,
+        DateTime? InsuranceExpiryDate
     );
 
 

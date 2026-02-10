@@ -64,20 +64,36 @@ namespace WheelsAndBills.Application.DTOs.Reports
             public int Year { get; set; }
             public int Month { get; set; }
             public decimal TotalAmount { get; set; }
+            public decimal FuelAmount { get; set; }
+            public decimal RepairLaborAmount { get; set; }
+            public decimal RepairPartsAmount { get; set; }
+            public decimal OtherAmount { get; set; }
+            public int EventsCount { get; set; }
         }
 
         public class CostsByEventTypeRow
         {
+            public DateTime EventDate { get; set; }
             public string EventType { get; set; } = null!;
             public decimal TotalAmount { get; set; }
+            public decimal FuelAmount { get; set; }
+            public decimal RepairLaborAmount { get; set; }
+            public decimal RepairPartsAmount { get; set; }
+            public decimal OtherAmount { get; set; }
+            public int EventsCount { get; set; }
         }
 
         public class RepairHistoryRow
         {
             public DateTime EventDate { get; set; }
             public Guid RepairEventId { get; set; }
+            public int Mileage { get; set; }
+            public string? Description { get; set; }
+            public string? WorkshopName { get; set; }
+            public string? PartsList { get; set; }
             public decimal LaborCost { get; set; }
             public decimal PartsCost { get; set; }
+            public decimal TotalCost { get; set; }
         }
     }
 }

@@ -142,6 +142,31 @@ namespace WheelsAndBills.Application.Features.Vehicles.VehicleMileage
             ));
         }
 
+        public async Task<ServiceResult<GetVehicleMileageDTO>> UpdateForUserAsync(Guid userId, Guid id, UpdateVehicleMileageDTO request, CancellationToken cancellationToken = default)
+        {
+            var item = await _db.VehicleMileage
+                .Include(vm => vm.Vehicle)
+                .FirstOrDefaultAsync(vm => vm.Id == id, cancellationToken);
+
+            if (item is null)
+                return ServiceResult<GetVehicleMileageDTO>.Fail(ErrorNotFound);
+
+            if (item.Vehicle.UserId != userId)
+                return ServiceResult<GetVehicleMileageDTO>.Fail(ErrorForbidden);
+
+            item.Mileage = request.Mileage;
+            item.Date = request.Date;
+
+            await _db.SaveChangesAsync(cancellationToken);
+
+            return ServiceResult<GetVehicleMileageDTO>.Ok(new GetVehicleMileageDTO(
+                item.Id,
+                item.VehicleId,
+                item.Mileage,
+                item.Date
+            ));
+        }
+
         public async Task<ServiceResult> DeleteForUserAsync(Guid userId, Guid id, CancellationToken cancellationToken = default)
         {
             var item = await _db.VehicleMileage

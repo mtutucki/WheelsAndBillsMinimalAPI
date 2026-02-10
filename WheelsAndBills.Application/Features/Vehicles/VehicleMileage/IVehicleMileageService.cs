@@ -12,6 +12,7 @@ namespace WheelsAndBills.Application.Features.Vehicles.VehicleMileage
         Task<ServiceResult> DeleteAsync(Guid id, CancellationToken cancellationToken = default);
 
         Task<ServiceResult<GetVehicleMileageDTO>> CreateForUserAsync(Guid userId, CreateVehicleMileageDTO request, CancellationToken cancellationToken = default);
+        Task<ServiceResult<GetVehicleMileageDTO>> UpdateForUserAsync(Guid userId, Guid id, UpdateVehicleMileageDTO request, CancellationToken cancellationToken = default);
         Task<ServiceResult> DeleteForUserAsync(Guid userId, Guid id, CancellationToken cancellationToken = default);
     }
 }

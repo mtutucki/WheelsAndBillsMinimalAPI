@@ -42,6 +42,7 @@
         string VehicleName,
         DateTime? LastServiceDate,
         int? LastServiceMileage,
+        int? CurrentMileage,
         DateTime? NextServiceDate,
         int? NextServiceMileage,
         bool IsOverdueDate,

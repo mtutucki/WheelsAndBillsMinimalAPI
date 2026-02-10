@@ -26,6 +26,8 @@ namespace WheelsAndBills.Application.Features.Notifications.Notifications
                     n.Id,
                     n.UserId,
                     n.VehicleId,
+                    n.NotificationTypeId,
+                    n.NotificationType != null ? n.NotificationType.Code : null,
                     n.Title,
                     n.Message,
                     n.ScheduledAt,
@@ -45,6 +47,8 @@ namespace WheelsAndBills.Application.Features.Notifications.Notifications
                     n.Id,
                     n.UserId,
                     n.VehicleId,
+                    n.NotificationTypeId,
+                    n.NotificationType != null ? n.NotificationType.Code : null,
                     n.Title,
                     n.Message,
                     n.ScheduledAt,
@@ -62,6 +66,8 @@ namespace WheelsAndBills.Application.Features.Notifications.Notifications
                     n.Id,
                     n.UserId,
                     n.VehicleId,
+                    n.NotificationTypeId,
+                    n.NotificationType != null ? n.NotificationType.Code : null,
                     n.Title,
                     n.Message,
                     n.ScheduledAt,
@@ -81,11 +87,17 @@ namespace WheelsAndBills.Application.Features.Notifications.Notifications
             if (!vehicleExists)
                 return ServiceResult<GetNotificationDTO>.Fail(ErrorVehicleMissing);
 
+            var typeExists = await _db.NotificationTypes
+                .AnyAsync(t => t.Id == request.NotificationTypeId, cancellationToken);
+            if (!typeExists)
+                return ServiceResult<GetNotificationDTO>.Fail("NotificationTypeMissing");
+
             var notification = new NotificationEntity
             {
                 Id = Guid.NewGuid(),
                 UserId = request.UserId,
                 VehicleId = request.VehicleId,
+                NotificationTypeId = request.NotificationTypeId,
                 Title = request.Title,
                 Message = request.Message,
                 ScheduledAt = request.ScheduledAt,
@@ -100,6 +112,8 @@ namespace WheelsAndBills.Application.Features.Notifications.Notifications
                 notification.Id,
                 notification.UserId,
                 notification.VehicleId,
+                notification.NotificationTypeId,
+                null,
                 notification.Title,
                 notification.Message,
                 notification.ScheduledAt,
@@ -125,6 +139,8 @@ namespace WheelsAndBills.Application.Features.Notifications.Notifications
                 notification.Id,
                 notification.UserId,
                 notification.VehicleId,
+                notification.NotificationTypeId,
+                null,
                 notification.Title,
                 notification.Message,
                 notification.ScheduledAt,

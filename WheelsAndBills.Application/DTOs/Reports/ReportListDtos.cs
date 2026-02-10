@@ -4,7 +4,8 @@ namespace WheelsAndBills.Application.DTOs.Reports
         Guid Id,
         string DefinitionCode,
         DateTime CreatedAt,
-        IReadOnlyList<ReportParameterItemDto> Parameters
+        IReadOnlyList<ReportParameterItemDto> Parameters,
+        IReadOnlyList<GeneratedReportItemDto> GeneratedReports
     );
 
     public record ReportDetailDto(

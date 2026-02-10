@@ -12,6 +12,14 @@ namespace WheelsAndBills.Application.DTOs.Events
         Dictionary<string, JsonElement>? Data
     );
 
+    public record UpdateMyVehicleEventDTO(
+        Guid EventTypeId,
+        DateTime EventDate,
+        int Mileage,
+        string? Description,
+        Dictionary<string, JsonElement>? Data
+    );
+
     public class EventsDTO
     {
         public record CreateEventPartDTO(
@@ -125,6 +133,16 @@ namespace WheelsAndBills.Application.DTOs.Events
             DateTime EventDate,
             int Mileage,
             string? Description
+        );
+
+        public record GetMyVehicleEventDetailsDTO(
+            Guid Id,
+            Guid VehicleId,
+            Guid EventTypeId,
+            DateTime EventDate,
+            int Mileage,
+            string? Description,
+            Dictionary<string, object?>? Data
         );
 
         public record CreateWorkshopDTO(string Name);

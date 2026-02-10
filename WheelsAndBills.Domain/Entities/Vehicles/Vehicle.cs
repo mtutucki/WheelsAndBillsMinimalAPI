@@ -11,6 +11,8 @@ namespace WheelsAndBills.Domain.Entities.Vehicles
 
         public string Vin { get; set; } = null!;
         public int Year { get; set; }
+        public Guid? AvatarFileId { get; set; }
+        public DateTime? InsuranceExpiryDate { get; set; }
 
         public Guid BrandId { get; set; }
         public Guid ModelId { get; set; }

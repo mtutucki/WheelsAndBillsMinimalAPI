@@ -23,7 +23,7 @@ namespace WheelsAndBills.Application.Features.Admin.DictionaryItems
         {
             return await _db.DictionaryItems
                 .OrderBy(i => i.Value)
-                .Select(i => new GetDictionaryItemDTO(i.Id, i.DictionaryId, i.Value))
+                .Select(i => new GetDictionaryItemDTO(i.Id, i.DictionaryId, i.Key, i.Value))
                 .ToListAsync(cancellationToken);
         }
 
@@ -32,7 +32,7 @@ namespace WheelsAndBills.Application.Features.Admin.DictionaryItems
             return await _db.DictionaryItems
                 .Where(i => i.DictionaryId == dictionaryId)
                 .OrderBy(i => i.Value)
-                .Select(i => new GetDictionaryItemDTO(i.Id, i.DictionaryId, i.Value))
+                .Select(i => new GetDictionaryItemDTO(i.Id, i.DictionaryId, i.Key, i.Value))
                 .ToListAsync(cancellationToken);
         }
 
@@ -44,7 +44,11 @@ namespace WheelsAndBills.Application.Features.Admin.DictionaryItems
                 return ServiceResult<GetDictionaryItemDTO>.Fail(ErrorDictionaryMissing);
 
             var exists = await _db.DictionaryItems
-                .AnyAsync(i => i.DictionaryId == request.DictionaryId && i.Value == request.Value, cancellationToken);
+                .AnyAsync(i =>
+                    i.DictionaryId == request.DictionaryId &&
+                    (i.Value == request.Value ||
+                     (!string.IsNullOrWhiteSpace(request.Key) && i.Key == request.Key)),
+                    cancellationToken);
             if (exists)
                 return ServiceResult<GetDictionaryItemDTO>.Fail(ErrorDuplicate);
 
@@ -52,13 +56,14 @@ namespace WheelsAndBills.Application.Features.Admin.DictionaryItems
             {
                 Id = Guid.NewGuid(),
                 DictionaryId = request.DictionaryId,
+                Key = string.IsNullOrWhiteSpace(request.Key) ? null : request.Key,
                 Value = request.Value
             };
 
             _db.DictionaryItems.Add(item);
             await _db.SaveChangesAsync(cancellationToken);
 
-            return ServiceResult<GetDictionaryItemDTO>.Ok(new GetDictionaryItemDTO(item.Id, item.DictionaryId, item.Value));
+            return ServiceResult<GetDictionaryItemDTO>.Ok(new GetDictionaryItemDTO(item.Id, item.DictionaryId, item.Key, item.Value));
         }
 
         public async Task<ServiceResult<GetDictionaryItemDTO>> UpdateAsync(Guid id, UpdateDictionaryItemDTO request, CancellationToken cancellationToken = default)
@@ -68,14 +73,20 @@ namespace WheelsAndBills.Application.Features.Admin.DictionaryItems
                 return ServiceResult<GetDictionaryItemDTO>.Fail(ErrorNotFound);
 
             var exists = await _db.DictionaryItems
-                .AnyAsync(i => i.DictionaryId == item.DictionaryId && i.Value == request.Value && i.Id != id, cancellationToken);
+                .AnyAsync(i =>
+                    i.DictionaryId == item.DictionaryId &&
+                    i.Id != id &&
+                    (i.Value == request.Value ||
+                     (!string.IsNullOrWhiteSpace(request.Key) && i.Key == request.Key)),
+                    cancellationToken);
             if (exists)
                 return ServiceResult<GetDictionaryItemDTO>.Fail(ErrorDuplicate);
 
+            item.Key = string.IsNullOrWhiteSpace(request.Key) ? null : request.Key;
             item.Value = request.Value;
             await _db.SaveChangesAsync(cancellationToken);
 
-            return ServiceResult<GetDictionaryItemDTO>.Ok(new GetDictionaryItemDTO(item.Id, item.DictionaryId, item.Value));
+            return ServiceResult<GetDictionaryItemDTO>.Ok(new GetDictionaryItemDTO(item.Id, item.DictionaryId, item.Key, item.Value));
         }
 
         public async Task<ServiceResult> DeleteAsync(Guid id, CancellationToken cancellationToken = default)

@@ -6,6 +6,7 @@ namespace WheelsAndBills.Application.Features.Dashboard
 {
     public class DashboardService : IDashboardService
     {
+        private static readonly Guid DeletedStatusId = Guid.Parse("85C30BAB-7FA3-4124-BE5D-1E220CACE01F");
         private readonly IAppDbContext _db;
         public DashboardService(IAppDbContext db) 
         {
@@ -27,7 +28,7 @@ namespace WheelsAndBills.Application.Features.Dashboard
                 return null;
 
             var vehicles = await _db.Vehicles
-                .Where(v => v.UserId == userId)
+                .Where(v => v.UserId == userId && v.StatusId != DeletedStatusId)
                 .Select(v => new VehicleSummaryDto(
                     v.Id,
                     v.Brand.Name,
@@ -175,6 +176,7 @@ namespace WheelsAndBills.Application.Features.Dashboard
                         $"{v.Brand} {v.Model} ({v.Year})",
                         lastDate,
                         lastMileage,
+                        currentMileage,
                         nextDate,
                         nextMileage,
                         overdueByDate,
@@ -208,7 +210,7 @@ namespace WheelsAndBills.Application.Features.Dashboard
             var from = GetRangeStart(range);
 
             var vehicles = await _db.Vehicles
-                .Where(v => v.UserId == userId)
+                .Where(v => v.UserId == userId && v.StatusId != DeletedStatusId)
                 .Select(v => new
                 {
                     v.Id,
@@ -230,6 +232,7 @@ namespace WheelsAndBills.Application.Features.Dashboard
             var vehicleIds = vehicles.Select(v => v.Id).ToList();
 
             var allVehicles = await _db.Vehicles
+                .Where(v => v.StatusId != DeletedStatusId)
                 .Select(v => new
                 {
                     v.Id,

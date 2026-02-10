@@ -17,7 +17,15 @@ namespace WheelsAndBills.Infrastructure.Persistence
     : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>, IAppDbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options)
-            : base(options) { }
+            : base(options)
+        {
+            var connection = Database.GetDbConnection();
+            if (string.IsNullOrWhiteSpace(connection.ConnectionString))
+            {
+                connection.ConnectionString =
+                    "Server=localhost;Database=WheelsAndBillsAPI;Trusted_Connection=True;TrustServerCertificate=True";
+            }
+        }
 
         // Vehicles
         public DbSet<Vehicle> Vehicles => Set<Vehicle>();

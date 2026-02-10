@@ -12,6 +12,7 @@ namespace WheelsAndBills.Application.Features.Vehicles.VehicleNotes
         Task<ServiceResult> DeleteAsync(Guid id, CancellationToken cancellationToken = default);
 
         Task<ServiceResult<GetVehicleNoteDTO>> CreateForUserAsync(Guid userId, CreateMyVehicleNoteDTO request, CancellationToken cancellationToken = default);
+        Task<ServiceResult<GetVehicleNoteDTO>> UpdateForUserAsync(Guid userId, Guid id, UpdateVehicleNoteDTO request, CancellationToken cancellationToken = default);
         Task<ServiceResult> DeleteForUserAsync(Guid userId, Guid id, CancellationToken cancellationToken = default);
     }
 }

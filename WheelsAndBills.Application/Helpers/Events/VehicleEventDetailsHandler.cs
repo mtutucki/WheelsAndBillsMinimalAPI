@@ -18,17 +18,24 @@ namespace WheelsAndBills.Application.Helpers.Events
         Guid vehicleEventId,
         IAppDbContext db)
         {
-            if (request.EventTypeId == Guid.Parse("D048C102-BD39-4280-9755-7DA64E418AFF"))
+            var eventTypeName = await db.EventTypes
+                .Where(et => et.Id == request.EventTypeId)
+                .Select(et => et.Name)
+                .FirstOrDefaultAsync();
+
+            var normalizedType = NormalizeEventTypeName(eventTypeName);
+
+            if (IsFuelingType(normalizedType))
             {
                 await HandleFuelingAsync(request, vehicleEventId, db);
             }
 
-            if (request.EventTypeId == Guid.Parse("8FD1DFE4-E0DE-43C1-A74D-DD2E0ECC6D07") || request.EventTypeId == Guid.Parse("FAC15ACE-3DC4-4E64-A515-A7A323622A9F"))
+            if (IsServiceType(normalizedType))
             {
                 await HandleServiceAsync(request, vehicleEventId, db);
             }
 
-            if (request.EventTypeId == Guid.Parse("31517083-E941-4C82-A86A-89197BB569B9") || request.EventTypeId == Guid.Parse("03C6CDF1-6C5A-4DDB-8C41-402DE7B5B969"))
+            if (IsStatusType(normalizedType))
             {
                 await HandleVehicleStatus(request, db);
             }
@@ -197,6 +204,45 @@ namespace WheelsAndBills.Application.Helpers.Events
             db.CostTypes.Add(costType);
             await db.SaveChangesAsync();
             return costType.Id;
+        }
+
+        private static string NormalizeEventTypeName(string? name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                return string.Empty;
+
+            return name
+                .Trim()
+                .ToLowerInvariant()
+                .Replace("ą", "a")
+                .Replace("ć", "c")
+                .Replace("ę", "e")
+                .Replace("ł", "l")
+                .Replace("ń", "n")
+                .Replace("ó", "o")
+                .Replace("ś", "s")
+                .Replace("ż", "z")
+                .Replace("ź", "z");
+        }
+
+        private static bool IsFuelingType(string normalizedName)
+        {
+            return normalizedName.Contains("tank") ||
+                   normalizedName.Contains("paliw") ||
+                   normalizedName.Contains("fuel");
+        }
+
+        private static bool IsServiceType(string normalizedName)
+        {
+            return normalizedName.Contains("serwis") ||
+                   normalizedName.Contains("service") ||
+                   normalizedName.Contains("przeglad") ||
+                   normalizedName.Contains("inspection");
+        }
+
+        private static bool IsStatusType(string normalizedName)
+        {
+            return normalizedName.Contains("status");
         }
     }
 }

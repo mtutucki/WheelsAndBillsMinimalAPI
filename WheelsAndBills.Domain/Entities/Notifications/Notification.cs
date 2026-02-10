@@ -8,6 +8,7 @@ namespace WheelsAndBills.Domain.Entities.Notification
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
         public Guid VehicleId { get; set; }
+        public Guid? NotificationTypeId { get; set; }
 
         public string Title { get; set; } = null!;
         public string Message { get; set; } = null!;
@@ -17,5 +18,6 @@ namespace WheelsAndBills.Domain.Entities.Notification
 
         public ApplicationUser User { get; set; } = null!;
         public Vehicle Vehicle { get; set; } = null!;
+        public NotificationType? NotificationType { get; set; }
     }
 }

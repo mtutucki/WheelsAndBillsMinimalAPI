@@ -56,16 +56,19 @@ namespace WheelsAndBills.Application.DTOs.Admin.DTO
 
     public record CreateDictionaryItemDTO(
         Guid DictionaryId,
+        string? Key,
         string Value
     );
 
     public record UpdateDictionaryItemDTO(
+        string? Key,
         string Value
     );
 
     public record GetDictionaryItemDTO(
         Guid Id,
         Guid DictionaryId,
+        string? Key,
         string Value
     );
 

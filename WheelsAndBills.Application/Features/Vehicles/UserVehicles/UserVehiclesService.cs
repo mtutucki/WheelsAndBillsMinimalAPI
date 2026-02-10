@@ -32,7 +32,15 @@ namespace WheelsAndBills.Application.Features.Vehicles.UserVehicles
                     new LookupDTO(v.BrandId, v.Brand.Name),
                     new LookupDTO(v.ModelId, v.Model.Name),
                     new LookupDTO(v.TypeId, v.Type.Name),
-                    new LookupDTO(v.StatusId, v.Status.Name)
+                    new LookupDTO(v.StatusId, v.Status.Name),
+                    v.AvatarFileId,
+                    v.AvatarFileId.HasValue
+                        ? _db.FileResources
+                            .Where(f => f.Id == v.AvatarFileId.Value)
+                            .Select(f => f.FilePath)
+                            .FirstOrDefault()
+                        : null,
+                    v.InsuranceExpiryDate
                 ))
                 .ToListAsync(cancellationToken);
         }
@@ -87,13 +95,33 @@ namespace WheelsAndBills.Application.Features.Vehicles.UserVehicles
                             n.CreatedAt,
                             n.UserId
                         ))
-                        .ToList()
+                        .ToList(),
+                    v.AvatarFileId,
+                    v.AvatarFileId.HasValue
+                        ? _db.FileResources
+                            .Where(f => f.Id == v.AvatarFileId.Value)
+                            .Select(f => f.FilePath)
+                            .FirstOrDefault()
+                        : null,
+                    v.InsuranceExpiryDate
                 ))
                 .FirstOrDefaultAsync(cancellationToken);
         }
 
         public async Task<Guid> CreateVehicleAsync(Guid userId, CreateVehicleRequestDTO request, CancellationToken cancellationToken = default)
         {
+            if (request.AvatarFileId.HasValue)
+            {
+                var fileExists = await _db.FileResources.AnyAsync(
+                    f => f.Id == request.AvatarFileId.Value,
+                    cancellationToken);
+
+                if (!fileExists)
+                    throw new InvalidOperationException("AvatarFileNotFound");
+            }
+
+            var insuranceExpiryDate = NormalizeInsuranceDate(request.InsuranceExpiryDate);
+
             var vehicle = new Vehicle
             {
                 Id = Guid.NewGuid(),
@@ -103,13 +131,46 @@ namespace WheelsAndBills.Application.Features.Vehicles.UserVehicles
                 BrandId = request.BrandId,
                 ModelId = request.ModelId,
                 TypeId = request.TypeId,
-                StatusId = request.StatusId
+                StatusId = request.StatusId,
+                AvatarFileId = request.AvatarFileId,
+                InsuranceExpiryDate = insuranceExpiryDate
             };
 
             _db.Vehicles.Add(vehicle);
             await _db.SaveChangesAsync(cancellationToken);
 
             return vehicle.Id;
+        }
+
+        public async Task<bool> UpdateVehicleAsync(Guid userId, Guid vehicleId, UpdateMyVehicleDTO request, CancellationToken cancellationToken = default)
+        {
+            var vehicle = await _db.Vehicles
+                .FirstOrDefaultAsync(v => v.Id == vehicleId && v.UserId == userId, cancellationToken);
+
+            if (vehicle is null)
+                return false;
+
+            if (request.AvatarFileId.HasValue)
+            {
+                var fileExists = await _db.FileResources.AnyAsync(
+                    f => f.Id == request.AvatarFileId.Value,
+                    cancellationToken);
+
+                if (!fileExists)
+                    throw new InvalidOperationException("AvatarFileNotFound");
+            }
+
+            vehicle.Vin = request.Vin;
+            vehicle.Year = request.Year;
+            vehicle.BrandId = request.BrandId;
+            vehicle.ModelId = request.ModelId;
+            vehicle.TypeId = request.TypeId;
+            vehicle.StatusId = request.StatusId;
+            vehicle.AvatarFileId = request.AvatarFileId;
+            vehicle.InsuranceExpiryDate = NormalizeInsuranceDate(request.InsuranceExpiryDate);
+
+            await _db.SaveChangesAsync(cancellationToken);
+            return true;
         }
 
         public async Task<bool> DeleteVehicleAsync(Guid userId, Guid vehicleId, CancellationToken cancellationToken = default)
@@ -124,6 +185,15 @@ namespace WheelsAndBills.Application.Features.Vehicles.UserVehicles
             await _db.SaveChangesAsync(cancellationToken);
 
             return true;
+        }
+
+        private static DateTime? NormalizeInsuranceDate(DateTime? date)
+        {
+            if (!date.HasValue)
+                return null;
+
+            var normalized = date.Value.Date;
+            return normalized == DateTime.MinValue ? null : normalized;
         }
     }
 }

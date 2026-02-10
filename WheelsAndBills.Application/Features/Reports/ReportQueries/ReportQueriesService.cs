@@ -27,7 +27,12 @@ public sealed class ReportQueriesService : IReportQueriesService
             {
                 Year = GetInt32(r, "Year"),
                 Month = GetInt32(r, "Month"),
-                TotalAmount = GetDecimal(r, "TotalAmount")
+                TotalAmount = GetDecimal(r, "TotalAmount"),
+                FuelAmount = GetDecimalSafe(r, "FuelAmount"),
+                RepairLaborAmount = GetDecimalSafe(r, "RepairLaborAmount"),
+                RepairPartsAmount = GetDecimalSafe(r, "RepairPartsAmount"),
+                OtherAmount = GetDecimalSafe(r, "OtherAmount"),
+                EventsCount = GetInt32Safe(r, "EventsCount")
             },
             ct);
 
@@ -38,8 +43,14 @@ public sealed class ReportQueriesService : IReportQueriesService
             vehicleId, from, to,
             r => new CostsByEventTypeRow
             {
+                EventDate = GetDateTimeSafe(r, "EventDate"),
                 EventType = GetString(r, "EventType"),
-                TotalAmount = GetDecimal(r, "TotalAmount")
+                TotalAmount = GetDecimal(r, "TotalAmount"),
+                FuelAmount = GetDecimalSafe(r, "FuelAmount"),
+                RepairLaborAmount = GetDecimalSafe(r, "RepairLaborAmount"),
+                RepairPartsAmount = GetDecimalSafe(r, "RepairPartsAmount"),
+                OtherAmount = GetDecimalSafe(r, "OtherAmount"),
+                EventsCount = GetInt32Safe(r, "EventsCount")
             },
             ct);
 
@@ -52,8 +63,13 @@ public sealed class ReportQueriesService : IReportQueriesService
             {
                 EventDate = GetDateTime(r, "EventDate"),
                 RepairEventId = GetGuid(r, "RepairEventId"),
-                LaborCost = GetDecimal(r, "LaborCost"),
-                PartsCost = GetDecimal(r, "PartsCost")
+                Mileage = GetInt32Safe(r, "Mileage"),
+                Description = GetStringSafe(r, "Description"),
+                WorkshopName = GetStringSafe(r, "WorkshopName"),
+                PartsList = GetStringSafe(r, "PartsList"),
+                LaborCost = GetDecimalSafe(r, "LaborCost"),
+                PartsCost = GetDecimalSafe(r, "PartsCost"),
+                TotalCost = GetDecimalSafe(r, "TotalCost")
             },
             ct);
 
@@ -81,7 +97,13 @@ public sealed class ReportQueriesService : IReportQueriesService
     {
         var list = new List<T>();
 
-        await using var conn = _db.Database.GetDbConnection();
+        var connectionString = _db.Database.GetDbConnection().ConnectionString;
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            connectionString = "Server=localhost;Database=WheelsAndBillsAPI;Trusted_Connection=True;TrustServerCertificate=True";
+        }
+
+        await using var conn = new SqlConnection(connectionString);
         await conn.OpenAsync(ct);
 
         await using var cmd = conn.CreateCommand();
@@ -107,7 +129,13 @@ public sealed class ReportQueriesService : IReportQueriesService
         DateTime to,
         CancellationToken ct)
     {
-        await using var conn = _db.Database.GetDbConnection();
+        var connectionString = _db.Database.GetDbConnection().ConnectionString;
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            connectionString = "Server=localhost;Database=WheelsAndBillsAPI;Trusted_Connection=True;TrustServerCertificate=True";
+        }
+
+        await using var conn = new SqlConnection(connectionString);
         await conn.OpenAsync(ct);
 
         await using var cmd = conn.CreateCommand();
@@ -129,6 +157,65 @@ public sealed class ReportQueriesService : IReportQueriesService
 
     private static decimal GetDecimal(DbDataReader r, string name)
         => r.GetDecimal(r.GetOrdinal(name));
+
+    private static bool TryGetOrdinal(DbDataReader r, string name, out int ordinal)
+    {
+        for (var i = 0; i < r.FieldCount; i++)
+        {
+            if (string.Equals(r.GetName(i), name, StringComparison.OrdinalIgnoreCase))
+            {
+                ordinal = i;
+                return true;
+            }
+        }
+
+        ordinal = -1;
+        return false;
+    }
+
+    private static int GetInt32Safe(DbDataReader r, string name)
+    {
+        if (!TryGetOrdinal(r, name, out var ordinal))
+            return 0;
+
+        var value = r.GetValue(ordinal);
+        return value == DBNull.Value || value is null
+            ? 0
+            : Convert.ToInt32(value);
+    }
+
+    private static decimal GetDecimalSafe(DbDataReader r, string name)
+    {
+        if (!TryGetOrdinal(r, name, out var ordinal))
+            return 0m;
+
+        var value = r.GetValue(ordinal);
+        return value == DBNull.Value || value is null
+            ? 0m
+            : Convert.ToDecimal(value);
+    }
+
+    private static string? GetStringSafe(DbDataReader r, string name)
+    {
+        if (!TryGetOrdinal(r, name, out var ordinal))
+            return null;
+
+        var value = r.GetValue(ordinal);
+        return value == DBNull.Value || value is null
+            ? null
+            : Convert.ToString(value);
+    }
+
+    private static DateTime GetDateTimeSafe(DbDataReader r, string name)
+    {
+        if (!TryGetOrdinal(r, name, out var ordinal))
+            return default;
+
+        var value = r.GetValue(ordinal);
+        return value == DBNull.Value || value is null
+            ? default
+            : Convert.ToDateTime(value);
+    }
 
     private static string GetString(DbDataReader r, string name)
         => r.GetString(r.GetOrdinal(name));

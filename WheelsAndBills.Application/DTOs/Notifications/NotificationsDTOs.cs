@@ -5,6 +5,7 @@ namespace WheelsAndBills.Application.DTOs.Notifications
         public record CreateNotificationDTO(
             Guid UserId,
             Guid VehicleId,
+            Guid NotificationTypeId,
             string Title,
             string Message,
             DateTime ScheduledAt
@@ -21,6 +22,8 @@ namespace WheelsAndBills.Application.DTOs.Notifications
             Guid Id,
             Guid UserId,
             Guid VehicleId,
+            Guid? NotificationTypeId,
+            string? NotificationTypeCode,
             string Title,
             string Message,
             DateTime ScheduledAt,
