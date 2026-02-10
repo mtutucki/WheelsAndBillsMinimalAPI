@@ -52,6 +52,7 @@ using WheelsAndBills.Application.Features.Admin.ContentPages;
 using WheelsAndBills.Application.Features.Dashboard;
 using WheelsAndBills.API.Endpoints.Dashboard;
 using WheelsAndBills.API.Endpoints.Reports.ReportQueries;
+using WheelsAndBills.API.Endpoints.Analytics;
 using QuestPDF.Infrastructure;
 using WheelsAndBills.API.Endpoints.Errors;
 using WheelsAndBills.API.Middleware;
@@ -211,6 +212,7 @@ api.MapEventsEndpoints();
 api.MapNotificationsEndpoints();
 api.MapReportEndpoints();
 api.MapDashboardEndpoints();
+api.MapAnalyticsEndpoints();
 api.MapErrorsEndpoints();
 app.MapReportGeneration();
 

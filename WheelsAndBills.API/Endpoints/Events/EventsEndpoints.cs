@@ -59,6 +59,8 @@ namespace WheelsAndBills.API.Endpoints.Events
                 .RequireAuthorization();
 
             userEvents.MapDeleteMyVehicleEvent();
+            userEvents.MapUpdateMyVehicleEvent();
+            userEvents.MapGetMyVehicleEventDetails();
 
 
             eventParts.MapCreateEventPart();

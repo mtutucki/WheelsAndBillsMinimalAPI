@@ -112,6 +112,53 @@ namespace WheelsAndBills.API.Endpoints.Events.VehicleEvents
             });
         }
 
+        public static RouteHandlerBuilder MapUpdateMyVehicleEvent(this RouteGroupBuilder app)
+        {
+            return app.MapPut("/my-events/{id:guid}", async (
+                Guid id,
+                UpdateMyVehicleEventDTO request,
+                ClaimsPrincipal user,
+                IVehicleEventsService vehicleEvents,
+                CancellationToken cancellationToken) =>
+            {
+                var userIdString = user.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (userIdString is null)
+                    return Results.Unauthorized();
+
+                var userId = Guid.Parse(userIdString);
+
+                var result = await vehicleEvents.UpdateForUserAsync(userId, id, request, cancellationToken);
+                if (!result.Success)
+                    return result.Error == "Forbidden"
+                        ? Results.Forbid()
+                        : Results.NotFound();
+
+                return Results.Ok(result.Data);
+            });
+        }
+
+        public static RouteHandlerBuilder MapGetMyVehicleEventDetails(this RouteGroupBuilder app)
+        {
+            return app.MapGet("/my-events/{id:guid}", async (
+                Guid id,
+                ClaimsPrincipal user,
+                IVehicleEventsService vehicleEvents,
+                CancellationToken cancellationToken) =>
+            {
+                var userIdString = user.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (userIdString is null)
+                    return Results.Unauthorized();
+
+                var userId = Guid.Parse(userIdString);
+
+                var details = await vehicleEvents.GetDetailsForUserAsync(userId, id, cancellationToken);
+                if (details is null)
+                    return Results.NotFound();
+
+                return Results.Ok(details);
+            });
+        }
+
         public static RouteHandlerBuilder MapCreateMyVehicleEvent(this RouteGroupBuilder app)
         {
             return app.MapPost("/my-events", async (

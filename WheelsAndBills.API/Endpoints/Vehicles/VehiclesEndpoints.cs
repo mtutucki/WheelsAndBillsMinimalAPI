@@ -65,9 +65,13 @@ namespace WheelsAndBills.API.Endpoints.Vehicles
             userVehicles.MapGetUserVehicles();
             userVehicles.MapGetUserVehicleById();
             userVehicles.MapCreateMyVehicle();
+            userVehicles.MapUpdateMyVehicle();
+            userVehicles.MapUploadVehicleAvatar();
             userVehicles.MapCreateMyVehicleNote();
+            userVehicles.MapUpdateMyVehicleNote();
             userVehicles.MapCreateMyVehicleEvent();
             userVehicles.MapCreateMyVehicleMileage();
+            userVehicles.MapUpdateMyVehicleMileage();
             userVehicles.MapDeleteMyVehicleMileage();
             userVehicles.MapDeleteMyVehicleNote();
             userVehicles.MapDeleteMyVehicle();

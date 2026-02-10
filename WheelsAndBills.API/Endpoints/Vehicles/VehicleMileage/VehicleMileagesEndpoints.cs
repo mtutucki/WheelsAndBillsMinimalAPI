@@ -130,5 +130,30 @@ namespace WheelsAndBills.API.Endpoints.Vehicles.VehicleMileage
             });
         }
 
+        public static RouteHandlerBuilder MapUpdateMyVehicleMileage(this RouteGroupBuilder app)
+        {
+            return app.MapPut("/my-mileages/{id:guid}", async (
+                Guid id,
+                UpdateVehicleMileageDTO request,
+                ClaimsPrincipal user,
+                IVehicleMileageService vehicleMileage,
+                CancellationToken cancellationToken) =>
+            {
+                var userIdString = user.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (userIdString is null)
+                    return Results.Unauthorized();
+
+                var userId = Guid.Parse(userIdString);
+
+                var result = await vehicleMileage.UpdateForUserAsync(userId, id, request, cancellationToken);
+                if (!result.Success)
+                    return result.Error == "Forbidden"
+                        ? Results.Forbid()
+                        : Results.NotFound();
+
+                return Results.Ok(result.Data);
+            });
+        }
+
     }
 }

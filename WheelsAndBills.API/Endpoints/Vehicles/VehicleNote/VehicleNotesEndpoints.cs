@@ -129,5 +129,30 @@ namespace WheelsAndBills.API.Endpoints.Vehicles.VehicleNote
                 );
             });
         }
+
+        public static RouteHandlerBuilder MapUpdateMyVehicleNote(this RouteGroupBuilder app)
+        {
+            return app.MapPut("/my-notes/{id:guid}", async (
+                Guid id,
+                UpdateVehicleNoteDTO request,
+                ClaimsPrincipal user,
+                IVehicleNotesService vehicleNotes,
+                CancellationToken cancellationToken) =>
+            {
+                var userIdString = user.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (userIdString is null)
+                    return Results.Unauthorized();
+
+                var userId = Guid.Parse(userIdString);
+
+                var result = await vehicleNotes.UpdateForUserAsync(userId, id, request, cancellationToken);
+                if (!result.Success)
+                    return result.Error == "Forbidden"
+                        ? Results.Forbid()
+                        : Results.NotFound();
+
+                return Results.Ok(result.Data);
+            });
+        }
     }
 }

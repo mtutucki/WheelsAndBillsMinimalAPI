@@ -9,6 +9,7 @@ namespace WheelsAndBills.API.Endpoints.Vehicles.Vehicles.UserVehicles
         public static RouteHandlerBuilder MapGetUserVehicles(this RouteGroupBuilder group)
         {
             return group.MapGet("", [Authorize] async (
+                HttpRequest request,
                 ClaimsPrincipal user,
                 IUserVehiclesService userVehicles,
                 CancellationToken cancellationToken) =>
@@ -20,8 +21,14 @@ namespace WheelsAndBills.API.Endpoints.Vehicles.Vehicles.UserVehicles
                     return Results.Unauthorized();
 
                 var vehicles = await userVehicles.GetUserVehiclesAsync(userId, cancellationToken);
+                var baseUrl = $"{request.Scheme}://{request.Host}";
+                var result = vehicles
+                    .Select(v => v.AvatarUrl is { Length: > 0 } && v.AvatarUrl.StartsWith("/")
+                        ? v with { AvatarUrl = $"{baseUrl}{v.AvatarUrl}" }
+                        : v)
+                    .ToList();
 
-                return Results.Ok(vehicles);
+                return Results.Ok(result);
             });
         }
     }

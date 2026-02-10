@@ -10,6 +10,7 @@ namespace WheelsAndBills.API.Endpoints.Vehicles.Vehicles.UserVehicles
         {
             return group.MapGet("/{id:guid}", [Authorize] async (
                 Guid id,
+                HttpRequest request,
                 ClaimsPrincipal user,
                 IUserVehiclesService userVehicles,
                 CancellationToken cancellationToken) =>
@@ -24,6 +25,13 @@ namespace WheelsAndBills.API.Endpoints.Vehicles.Vehicles.UserVehicles
 
                 if (vehicle == null)
                     return Results.NotFound();
+
+                var baseUrl = $"{request.Scheme}://{request.Host}";
+                if (!string.IsNullOrWhiteSpace(vehicle.AvatarUrl) &&
+                    vehicle.AvatarUrl.StartsWith("/"))
+                {
+                    vehicle = vehicle with { AvatarUrl = $"{baseUrl}{vehicle.AvatarUrl}" };
+                }
 
                 return Results.Ok(vehicle);
             });
