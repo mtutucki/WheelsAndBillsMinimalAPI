@@ -6,6 +6,7 @@ using WheelsAndBills.API.Endpoints.Admin.FileResources;
 using WheelsAndBills.API.Endpoints.Admin.Roles;
 using WheelsAndBills.API.Endpoints.Admin.SystemSettings;
 using WheelsAndBills.API.Endpoints.Admin.Logs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WheelsAndBills.API.Endpoints.Admin
 {
@@ -22,37 +23,37 @@ namespace WheelsAndBills.API.Endpoints.Admin
             var contectBlocksAuth = app
                 .MapGroup(mapGroup)
                 .WithTags("Admin - Content blocks")
-                .RequireAuthorization();
+                .RequireAuthorization(new AuthorizeAttribute { Roles = "Admin,Manager" });
 
             var contentPageAuth = app
                 .MapGroup(mapGroup)
                 .WithTags("Admin - Content page")
-                .RequireAuthorization();
+                .RequireAuthorization(new AuthorizeAttribute { Roles = "Admin,Manager" });
 
             var dictionary = app
                 .MapGroup(mapGroup)
                 .WithTags("Admin - Dictionary")
-                .RequireAuthorization();
+                .RequireAuthorization(new AuthorizeAttribute { Roles = "Admin,Manager" });
 
             var dictionaryItems = app
                 .MapGroup(mapGroup)
                 .WithTags("Admin - Dictionary Items")
-                .RequireAuthorization();
+                .RequireAuthorization(new AuthorizeAttribute { Roles = "Admin,Manager" });
 
             var fileResource = app
                 .MapGroup(mapGroup)
                 .WithTags("Admin - File resource")
-                .RequireAuthorization();
+                .RequireAuthorization(new AuthorizeAttribute { Roles = "Admin,Manager" });
 
             var systemSettings = app
                 .MapGroup(mapGroup)
                 .WithTags("Admin - System settings")
-                .RequireAuthorization();
+                .RequireAuthorization(new AuthorizeAttribute { Roles = "Admin,Manager" });
 
             var logs = app
                 .MapGroup(mapGroup)
                 .WithTags("Admin - Logs")
-                .RequireAuthorization();
+                .RequireAuthorization(new AuthorizeAttribute { Roles = "Admin" });
 
             contectBlocksAuth.MapGetContentBlocks();
             contectBlocksAuth.MapCreateContentBlocks();

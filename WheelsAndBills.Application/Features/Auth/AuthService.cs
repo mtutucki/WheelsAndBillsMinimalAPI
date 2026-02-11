@@ -64,6 +64,9 @@ namespace WheelsAndBills.Application.Features.Auth
                 new Claim(ClaimTypes.Email, user.Email!)
             };
 
+            var roles = await _userManager.GetRolesAsync(user);
+            claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+
             var key = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
 

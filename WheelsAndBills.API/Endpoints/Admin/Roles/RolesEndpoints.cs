@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 using WheelsAndBills.Domain.Entities.Auth;
 
 namespace WheelsAndBills.API.Endpoints.Admin.Roles
@@ -112,6 +113,24 @@ namespace WheelsAndBills.API.Endpoints.Admin.Roles
                 var result = await userManager.RemoveFromRoleAsync(user, role);
                 return result.Succeeded
                     ? Results.Ok()
+                    : Results.BadRequest(result.Errors);
+            });
+
+            group.MapDelete("/users/{id:guid}", async (
+                Guid id,
+                ClaimsPrincipal currentUser,
+                UserManager<ApplicationUser> userManager) =>
+            {
+                var currentUserIdClaim = currentUser.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (Guid.TryParse(currentUserIdClaim, out var currentUserId) && currentUserId == id)
+                    return Results.BadRequest("Cannot delete yourself.");
+
+                var user = await userManager.FindByIdAsync(id.ToString());
+                if (user is null) return Results.NotFound();
+
+                var result = await userManager.DeleteAsync(user);
+                return result.Succeeded
+                    ? Results.NoContent()
                     : Results.BadRequest(result.Errors);
             });
 
