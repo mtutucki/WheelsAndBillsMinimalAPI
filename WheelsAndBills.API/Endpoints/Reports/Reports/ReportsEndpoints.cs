@@ -415,17 +415,6 @@ namespace WheelsAndBills.API.Endpoints.Reports.Reports
             if (!await IsNotificationEnabledAsync(db, userId, typeId, ct))
                 return;
 
-            var today = DateTime.UtcNow.Date;
-            var exists = await db.Notifications
-                .AnyAsync(n =>
-                    n.UserId == userId &&
-                    n.VehicleId == vehicleId &&
-                    n.NotificationTypeId == typeId &&
-                    n.ScheduledAt >= today,
-                    ct);
-            if (exists)
-                return;
-
             var reportLabel = reportCode switch
             {
                 "MONTHLY_COSTS" => "koszty miesięczne",
@@ -433,6 +422,7 @@ namespace WheelsAndBills.API.Endpoints.Reports.Reports
                 "REPAIRS_HISTORY" => "historia napraw",
                 _ => reportCode
             };
+            var message = $"Twój raport \"{reportLabel}\" jest gotowy do pobrania.";
 
             db.Notifications.Add(new WheelsAndBills.Domain.Entities.Notification.Notification
             {
@@ -441,7 +431,7 @@ namespace WheelsAndBills.API.Endpoints.Reports.Reports
                 VehicleId = vehicleId,
                 NotificationTypeId = typeId,
                 Title = "Raport gotowy",
-                Message = $"Twój raport \"{reportLabel}\" jest gotowy do pobrania.",
+                Message = message,
                 ScheduledAt = DateTime.UtcNow,
                 IsSent = false,
                 IsRead = false

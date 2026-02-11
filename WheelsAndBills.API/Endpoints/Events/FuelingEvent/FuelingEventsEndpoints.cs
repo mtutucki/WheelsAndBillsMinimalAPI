@@ -98,6 +98,13 @@ namespace WheelsAndBills.API.Endpoints.Events.FuelingEvent
                 if (!Guid.TryParse(userIdClaim, out var userId))
                     return Results.Unauthorized();
 
+                var fromDate = from.HasValue && from.Value != default
+                    ? from.Value.Date
+                    : (DateTime?)null;
+                var toDate = to.HasValue && to.Value != default
+                    ? to.Value.Date
+                    : (DateTime?)null;
+
                 var query = db.FuelingEvents
                     .AsNoTracking()
                     .Where(f => f.VehicleEvent.Vehicle.UserId == userId);
@@ -105,11 +112,11 @@ namespace WheelsAndBills.API.Endpoints.Events.FuelingEvent
                 if (vehicleId.HasValue)
                     query = query.Where(f => f.VehicleEvent.VehicleId == vehicleId.Value);
 
-                if (from.HasValue)
-                    query = query.Where(f => f.VehicleEvent.EventDate >= from.Value.Date);
+                if (fromDate.HasValue)
+                    query = query.Where(f => f.VehicleEvent.EventDate >= fromDate.Value);
 
-                if (to.HasValue)
-                    query = query.Where(f => f.VehicleEvent.EventDate <= to.Value.Date);
+                if (toDate.HasValue)
+                    query = query.Where(f => f.VehicleEvent.EventDate <= toDate.Value);
 
                 var items = await query
                     .GroupBy(f => new
@@ -117,17 +124,22 @@ namespace WheelsAndBills.API.Endpoints.Events.FuelingEvent
                         Year = f.VehicleEvent.EventDate.Year,
                         Month = f.VehicleEvent.EventDate.Month
                     })
-                    .Select(g => new FuelingSummaryRow(
+                    .Select(g => new
+                    {
                         g.Key.Year,
                         g.Key.Month,
-                        g.Sum(x => x.Liters),
-                        g.Sum(x => x.TotalPrice),
-                        g.Sum(x => x.Liters) == 0
-                            ? 0
-                            : g.Sum(x => x.TotalPrice) / g.Sum(x => x.Liters)
+                        TotalLiters = g.Sum(x => x.Liters),
+                        TotalCost = g.Sum(x => x.TotalPrice)
+                    })
+                    .OrderBy(x => x.Year)
+                    .ThenBy(x => x.Month)
+                    .Select(x => new FuelingSummaryRow(
+                        x.Year,
+                        x.Month,
+                        x.TotalLiters,
+                        x.TotalCost,
+                        x.TotalLiters == 0 ? 0 : x.TotalCost / x.TotalLiters
                     ))
-                    .OrderBy(r => r.Year)
-                    .ThenBy(r => r.Month)
                     .ToListAsync(cancellationToken);
 
                 return Results.Ok(items);

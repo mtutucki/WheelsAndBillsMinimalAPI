@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using WheelsAndBills.Application.Abstractions.Persistence;
 using WheelsAndBills.Application.DTOs.Analytics;
+using WheelsAndBills.Application.Features.Reports.ReportQueries;
 
 namespace WheelsAndBills.API.Endpoints.Analytics
 {
@@ -26,6 +27,7 @@ namespace WheelsAndBills.API.Endpoints.Analytics
             analytics.MapExportMileage();
             analytics.MapExportEvents();
             analytics.MapExportFuel();
+            analytics.MapExportCosts();
 
             return app;
         }
@@ -588,6 +590,99 @@ namespace WheelsAndBills.API.Endpoints.Analytics
             });
         }
 
+        private static RouteHandlerBuilder MapExportCosts(this RouteGroupBuilder group)
+        {
+            return group.MapPost("/costs/export", [Authorize] async (
+                CostsExportRequest request,
+                ClaimsPrincipal user,
+                IAppDbContext db,
+                IReportQueriesService reportQueries,
+                CancellationToken cancellationToken) =>
+            {
+                var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
+                if (userId == Guid.Empty)
+                    return Results.Unauthorized();
+
+                var ownsVehicle = await db.Vehicles
+                    .AnyAsync(v => v.Id == request.VehicleId && v.UserId == userId && v.StatusId != DeletedStatusId, cancellationToken);
+
+                if (!ownsVehicle)
+                    return Results.NotFound();
+
+                if (!request.From.HasValue || !request.To.HasValue)
+                    return Results.BadRequest("Missing range");
+
+                var rows = await reportQueries.GetMonthlyCostsAsync(
+                    request.VehicleId,
+                    request.From.Value,
+                    request.To.Value,
+                    cancellationToken);
+
+                var filtered = rows
+                    .Where(r =>
+                        r.TotalAmount != 0m ||
+                        r.FuelAmount != 0m ||
+                        r.RepairLaborAmount != 0m ||
+                        r.RepairPartsAmount != 0m ||
+                        r.OtherAmount != 0m ||
+                        r.EventsCount != 0)
+                    .OrderBy(r => r.Year)
+                    .ThenBy(r => r.Month)
+                    .ToList();
+
+                if (filtered.Count == 0)
+                    return Results.BadRequest("No data");
+
+                using var workbook = new XLWorkbook();
+
+                var summary = workbook.Worksheets.Add("KosztyPodsumowanie");
+                summary.Cell(1, 1).Value = "Miesiac";
+                summary.Cell(1, 2).Value = "Koszt calkowity (zl)";
+                summary.Cell(1, 3).Value = "Liczba zdarzen";
+
+                for (var i = 0; i < filtered.Count; i++)
+                {
+                    var row = filtered[i];
+                    summary.Cell(i + 2, 1).Value = $"{row.Year}-{row.Month:00}";
+                    summary.Cell(i + 2, 2).Value = row.TotalAmount;
+                    summary.Cell(i + 2, 3).Value = row.EventsCount;
+                }
+
+                summary.Columns().AdjustToContents();
+                TryAddChartImage(summary, request.TrendChartImageBase64, filtered.Count + 3, 1);
+
+                var categories = workbook.Worksheets.Add("KosztyKategorie");
+                categories.Cell(1, 1).Value = "Miesiac";
+                categories.Cell(1, 2).Value = "Paliwo (zl)";
+                categories.Cell(1, 3).Value = "Robocizna (zl)";
+                categories.Cell(1, 4).Value = "Czesci (zl)";
+                categories.Cell(1, 5).Value = "Inne (zl)";
+
+                for (var i = 0; i < filtered.Count; i++)
+                {
+                    var row = filtered[i];
+                    categories.Cell(i + 2, 1).Value = $"{row.Year}-{row.Month:00}";
+                    categories.Cell(i + 2, 2).Value = row.FuelAmount;
+                    categories.Cell(i + 2, 3).Value = row.RepairLaborAmount;
+                    categories.Cell(i + 2, 4).Value = row.RepairPartsAmount;
+                    categories.Cell(i + 2, 5).Value = row.OtherAmount;
+                }
+
+                categories.Columns().AdjustToContents();
+                TryAddChartImage(categories, request.CategoryChartImageBase64, filtered.Count + 3, 1);
+
+                using var stream = new MemoryStream();
+                workbook.SaveAs(stream);
+                stream.Position = 0;
+
+                var fileName = $"analiza-kosztow-{DateTime.UtcNow:yyyy-MM-dd}.xlsx";
+                return Results.File(
+                    stream.ToArray(),
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    fileName);
+            });
+        }
+
         private static void TryAddChartImage(IXLWorksheet sheet, string? dataUrl, int row, int column)
         {
             if (string.IsNullOrWhiteSpace(dataUrl))
@@ -671,6 +766,13 @@ namespace WheelsAndBills.API.Endpoints.Analytics
             DateTime? From,
             DateTime? To,
             string? ChartImageBase64);
+
+        private sealed record CostsExportRequest(
+            Guid VehicleId,
+            DateTime? From,
+            DateTime? To,
+            string? TrendChartImageBase64,
+            string? CategoryChartImageBase64);
 
         private sealed record FuelRow(
             DateTime Date,

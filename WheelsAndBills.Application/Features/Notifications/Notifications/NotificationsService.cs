@@ -43,6 +43,7 @@ namespace WheelsAndBills.Application.Features.Notifications.Notifications
         {
             return await _db.Notifications
                 .Where(n => n.UserId == userId)
+                .OrderByDescending(n => n.ScheduledAt)
                 .Select(n => new GetNotificationDTO(
                     n.Id,
                     n.UserId,
