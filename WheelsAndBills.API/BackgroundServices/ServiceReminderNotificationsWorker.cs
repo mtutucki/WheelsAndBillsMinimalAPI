@@ -41,7 +41,6 @@ namespace WheelsAndBills.API.BackgroundServices
                 }
                 catch (TaskCanceledException)
                 {
-                    // ignore on shutdown
                 }
             }
         }

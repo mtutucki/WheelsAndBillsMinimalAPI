@@ -111,7 +111,6 @@ namespace WheelsAndBills.API.Endpoints.Reports.Reports
                     }
                     catch
                     {
-                        // best-effort cleanup
                     }
                 }
 
@@ -343,16 +342,19 @@ namespace WheelsAndBills.API.Endpoints.Reports.Reports
                     return Results.BadRequest("Unsupported report definition");
                 }
 
+                var pdfGeneratedId = Guid.NewGuid();
+
                 db.GeneratedReports.Add(new WheelsAndBills.Domain.Entities.Report.GeneratedReport
                 {
-                    Id = Guid.NewGuid(),
+                    Id = pdfGeneratedId,
                     ReportId = report.Id,
                     FilePath = pdfPath
                 });
 
+                var excelGeneratedId = Guid.NewGuid();
                 db.GeneratedReports.Add(new WheelsAndBills.Domain.Entities.Report.GeneratedReport
                 {
-                    Id = Guid.NewGuid(),
+                    Id = excelGeneratedId,
                     ReportId = report.Id,
                     FilePath = xlsxPath
                 });
@@ -366,7 +368,7 @@ namespace WheelsAndBills.API.Endpoints.Reports.Reports
 
                 await db.SaveChangesAsync(cancellationToken);
 
-                return Results.Ok(new { PdfPath = pdfPath, ExcelPath = xlsxPath });
+                return Results.Ok(new { PdfId = pdfGeneratedId, ExcelId = excelGeneratedId });
             })
             .RequireAuthorization();
         }

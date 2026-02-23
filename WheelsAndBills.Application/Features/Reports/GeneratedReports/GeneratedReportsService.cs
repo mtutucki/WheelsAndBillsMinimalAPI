@@ -92,5 +92,7 @@ namespace WheelsAndBills.Application.Features.Reports.GeneratedReports
 
             return ServiceResult.Ok();
         }
+
+        
     }
 }

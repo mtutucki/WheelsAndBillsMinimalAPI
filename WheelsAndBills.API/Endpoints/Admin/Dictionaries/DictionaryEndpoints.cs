@@ -5,7 +5,6 @@ namespace WheelsAndBills.API.Endpoints.Admin.Dictionaries
 {
     public static class DictionaryEndpoints
     {
-        // GET ALL
         public static RouteHandlerBuilder MapGetDictionaries(this RouteGroupBuilder app)
         {
             return app.MapGet("/dictionaries", async (
@@ -18,7 +17,6 @@ namespace WheelsAndBills.API.Endpoints.Admin.Dictionaries
             });
         }
 
-        // GET BY ID
         public static RouteHandlerBuilder MapGetDictionaryById(this RouteGroupBuilder app)
         {
             return app.MapGet("/dictionaries/{id:guid}", async (
@@ -34,7 +32,6 @@ namespace WheelsAndBills.API.Endpoints.Admin.Dictionaries
             });
         }
 
-        // CREATE
         public static RouteHandlerBuilder MapCreateDictionary(this RouteGroupBuilder app)
         {
             return app.MapPost("/dictionaries", async (
@@ -53,7 +50,6 @@ namespace WheelsAndBills.API.Endpoints.Admin.Dictionaries
             });
         }
 
-        // UPDATE (PUT)
         public static RouteHandlerBuilder MapUpdateDictionary(this RouteGroupBuilder app)
         {
             return app.MapPut("/dictionaries/{id:guid}", async (
@@ -72,7 +68,6 @@ namespace WheelsAndBills.API.Endpoints.Admin.Dictionaries
             });
         }
 
-        // DELETE
         public static RouteHandlerBuilder MapDeleteDictionary(this RouteGroupBuilder app)
         {
             return app.MapDelete("/dictionaries/{id:guid}", async (

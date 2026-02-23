@@ -1,9 +1,10 @@
 ﻿using System.Data;
 using System.Data.Common;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using static WheelsAndBills.Application.DTOs.Reports.ReportDTOs;
 using WheelsAndBills.Application.Abstractions.Persistence;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.SqlClient;
+using WheelsAndBills.Application.DTOs.Reports;
+using static WheelsAndBills.Application.DTOs.Reports.ReportDTOs;
 
 namespace WheelsAndBills.Application.Features.Reports.ReportQueries;
 
@@ -16,7 +17,6 @@ public sealed class ReportQueriesService : IReportQueriesService
         _db = db;
     }
 
-    // ================= PUBLIC API =================
 
     public Task<IReadOnlyList<MonthlyCostRow>> GetMonthlyCostsAsync(
         Guid vehicleId, DateTime from, DateTime to, CancellationToken ct)
@@ -85,7 +85,6 @@ public sealed class ReportQueriesService : IReportQueriesService
             "SELECT dbo.fn_TotalRepairCostForVehicle(@v,@f,@t)",
             vehicleId, from, to, ct);
 
-    // ================= CORE HELPERS =================
 
     private async Task<IReadOnlyList<T>> ExecListAsync<T>(
         string storedProc,
@@ -103,7 +102,7 @@ public sealed class ReportQueriesService : IReportQueriesService
             connectionString = "Server=localhost;Database=WheelsAndBillsAPI;Trusted_Connection=True;TrustServerCertificate=True";
         }
 
-        await using var conn = new SqlConnection(connectionString);
+        await using var conn = new SqlConnection(connectionString); 
         await conn.OpenAsync(ct);
 
         await using var cmd = conn.CreateCommand();

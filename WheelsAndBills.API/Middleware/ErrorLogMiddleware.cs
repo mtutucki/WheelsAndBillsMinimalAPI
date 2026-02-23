@@ -56,7 +56,6 @@ namespace WheelsAndBills.API.Middleware
                     }
                     catch
                     {
-                        // Ignore logging failures (e.g., missing table) to avoid masking original error.
                         ErrorLogState.Enabled = false;
                     }
                 }

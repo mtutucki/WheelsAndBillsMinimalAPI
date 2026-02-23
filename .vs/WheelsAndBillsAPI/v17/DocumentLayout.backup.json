@@ -3,20 +3,12 @@
   "WorkspaceRootPath": "C:\\Users\\mtutu\\Desktop\\Programming\\Programming\\1. Projects\\10. Minimal Wheels And Bills\\WheelsAndBillsAPI\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{F30B9F84-D174-4326-8D01-AA96FF8EF3AB}|WheelsAndBillsAPI.csproj|c:\\users\\mtutu\\desktop\\programming\\programming\\1. projects\\10. minimal wheels and bills\\wheelsandbillsapi\\wheelsandbills.api\\migrations\\20260119213734_add-event.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F30B9F84-D174-4326-8D01-AA96FF8EF3AB}|WheelsAndBillsAPI.csproj|solutionrelative:wheelsandbills.api\\migrations\\20260119213734_add-event.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{F30B9F84-D174-4326-8D01-AA96FF8EF3AB}|WheelsAndBillsAPI.csproj|c:\\users\\mtutu\\desktop\\programming\\programming\\1. projects\\10. minimal wheels and bills\\wheelsandbillsapi\\wheelsandbills.application\\features\\reports\\reportqueries\\reportqueriesservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F30B9F84-D174-4326-8D01-AA96FF8EF3AB}|WheelsAndBillsAPI.csproj|solutionrelative:wheelsandbills.application\\features\\reports\\reportqueries\\reportqueriesservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{F30B9F84-D174-4326-8D01-AA96FF8EF3AB}|WheelsAndBillsAPI.csproj|c:\\users\\mtutu\\desktop\\programming\\programming\\1. projects\\10. minimal wheels and bills\\wheelsandbillsapi\\wheelsandbills.infrastructure\\obj\\debug\\net8.0\\.netcoreapp,version=v8.0.assemblyattributes.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F30B9F84-D174-4326-8D01-AA96FF8EF3AB}|WheelsAndBillsAPI.csproj|solutionrelative:wheelsandbills.infrastructure\\obj\\debug\\net8.0\\.netcoreapp,version=v8.0.assemblyattributes.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{F30B9F84-D174-4326-8D01-AA96FF8EF3AB}|WheelsAndBillsAPI.csproj|c:\\users\\mtutu\\desktop\\programming\\programming\\1. projects\\10. minimal wheels and bills\\wheelsandbillsapi\\wheelsandbills.application\\obj\\debug\\net8.0\\.netcoreapp,version=v8.0.assemblyattributes.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F30B9F84-D174-4326-8D01-AA96FF8EF3AB}|WheelsAndBillsAPI.csproj|solutionrelative:wheelsandbills.application\\obj\\debug\\net8.0\\.netcoreapp,version=v8.0.assemblyattributes.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{F30B9F84-D174-4326-8D01-AA96FF8EF3AB}|WheelsAndBillsAPI.csproj|c:\\users\\mtutu\\desktop\\programming\\programming\\1. projects\\10. minimal wheels and bills\\wheelsandbillsapi\\wheelsandbills.domain\\obj\\debug\\net8.0\\.netcoreapp,version=v8.0.assemblyattributes.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F30B9F84-D174-4326-8D01-AA96FF8EF3AB}|WheelsAndBillsAPI.csproj|solutionrelative:wheelsandbills.domain\\obj\\debug\\net8.0\\.netcoreapp,version=v8.0.assemblyattributes.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{F30B9F84-D174-4326-8D01-AA96FF8EF3AB}|WheelsAndBillsAPI.csproj|c:\\users\\mtutu\\desktop\\programming\\programming\\1. projects\\10. minimal wheels and bills\\wheelsandbillsapi\\wheelsandbillsapi.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{F30B9F84-D174-4326-8D01-AA96FF8EF3AB}|WheelsAndBillsAPI.csproj|solutionrelative:wheelsandbillsapi.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     }
   ],
   "DocumentGroupContainers": [
@@ -35,54 +27,27 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "20260119213734_add-event.cs",
-              "DocumentMoniker": "C:\\Users\\mtutu\\Desktop\\Programming\\Programming\\1. Projects\\10. Minimal Wheels And Bills\\WheelsAndBillsAPI\\WheelsAndBills.API\\Migrations\\20260119213734_add-event.cs",
-              "RelativeDocumentMoniker": "WheelsAndBills.API\\Migrations\\20260119213734_add-event.cs",
-              "ToolTip": "C:\\Users\\mtutu\\Desktop\\Programming\\Programming\\1. Projects\\10. Minimal Wheels And Bills\\WheelsAndBillsAPI\\WheelsAndBills.API\\Migrations\\20260119213734_add-event.cs",
-              "RelativeToolTip": "WheelsAndBills.API\\Migrations\\20260119213734_add-event.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAZAAAAAAAAAA==",
+              "Title": "ReportQueriesService.cs",
+              "DocumentMoniker": "C:\\Users\\mtutu\\Desktop\\Programming\\Programming\\1. Projects\\10. Minimal Wheels And Bills\\WheelsAndBillsAPI\\WheelsAndBills.Application\\Features\\Reports\\ReportQueries\\ReportQueriesService.cs",
+              "RelativeDocumentMoniker": "WheelsAndBills.Application\\Features\\Reports\\ReportQueries\\ReportQueriesService.cs",
+              "ToolTip": "C:\\Users\\mtutu\\Desktop\\Programming\\Programming\\1. Projects\\10. Minimal Wheels And Bills\\WheelsAndBillsAPI\\WheelsAndBills.Application\\Features\\Reports\\ReportQueries\\ReportQueriesService.cs",
+              "RelativeToolTip": "WheelsAndBills.Application\\Features\\Reports\\ReportQueries\\ReportQueriesService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-03T17:43:39.712Z",
+              "WhenOpened": "2026-02-23T21:19:27.855Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": ".NETCoreApp,Version=v8.0.AssemblyAttributes.cs",
-              "DocumentMoniker": "C:\\Users\\mtutu\\Desktop\\Programming\\Programming\\1. Projects\\10. Minimal Wheels And Bills\\WheelsAndBillsAPI\\WheelsAndBills.Infrastructure\\obj\\Debug\\net8.0\\.NETCoreApp,Version=v8.0.AssemblyAttributes.cs",
-              "RelativeDocumentMoniker": "WheelsAndBills.Infrastructure\\obj\\Debug\\net8.0\\.NETCoreApp,Version=v8.0.AssemblyAttributes.cs",
-              "ToolTip": "C:\\Users\\mtutu\\Desktop\\Programming\\Programming\\1. Projects\\10. Minimal Wheels And Bills\\WheelsAndBillsAPI\\WheelsAndBills.Infrastructure\\obj\\Debug\\net8.0\\.NETCoreApp,Version=v8.0.AssemblyAttributes.cs",
-              "RelativeToolTip": "WheelsAndBills.Infrastructure\\obj\\Debug\\net8.0\\.NETCoreApp,Version=v8.0.AssemblyAttributes.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-03T17:43:14.561Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": ".NETCoreApp,Version=v8.0.AssemblyAttributes.cs",
-              "DocumentMoniker": "C:\\Users\\mtutu\\Desktop\\Programming\\Programming\\1. Projects\\10. Minimal Wheels And Bills\\WheelsAndBillsAPI\\WheelsAndBills.Application\\obj\\Debug\\net8.0\\.NETCoreApp,Version=v8.0.AssemblyAttributes.cs",
-              "RelativeDocumentMoniker": "WheelsAndBills.Application\\obj\\Debug\\net8.0\\.NETCoreApp,Version=v8.0.AssemblyAttributes.cs",
-              "ToolTip": "C:\\Users\\mtutu\\Desktop\\Programming\\Programming\\1. Projects\\10. Minimal Wheels And Bills\\WheelsAndBillsAPI\\WheelsAndBills.Application\\obj\\Debug\\net8.0\\.NETCoreApp,Version=v8.0.AssemblyAttributes.cs",
-              "RelativeToolTip": "WheelsAndBills.Application\\obj\\Debug\\net8.0\\.NETCoreApp,Version=v8.0.AssemblyAttributes.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAALAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-03T17:43:10.509Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": ".NETCoreApp,Version=v8.0.AssemblyAttributes.cs",
-              "DocumentMoniker": "C:\\Users\\mtutu\\Desktop\\Programming\\Programming\\1. Projects\\10. Minimal Wheels And Bills\\WheelsAndBillsAPI\\WheelsAndBills.Domain\\obj\\Debug\\net8.0\\.NETCoreApp,Version=v8.0.AssemblyAttributes.cs",
-              "RelativeDocumentMoniker": "WheelsAndBills.Domain\\obj\\Debug\\net8.0\\.NETCoreApp,Version=v8.0.AssemblyAttributes.cs",
-              "ToolTip": "C:\\Users\\mtutu\\Desktop\\Programming\\Programming\\1. Projects\\10. Minimal Wheels And Bills\\WheelsAndBillsAPI\\WheelsAndBills.Domain\\obj\\Debug\\net8.0\\.NETCoreApp,Version=v8.0.AssemblyAttributes.cs",
-              "RelativeToolTip": "WheelsAndBills.Domain\\obj\\Debug\\net8.0\\.NETCoreApp,Version=v8.0.AssemblyAttributes.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAALAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-03T17:42:54.235Z",
-              "EditorCaption": ""
+              "Title": "WheelsAndBillsAPI.csproj",
+              "DocumentMoniker": "C:\\Users\\mtutu\\Desktop\\Programming\\Programming\\1. Projects\\10. Minimal Wheels And Bills\\WheelsAndBillsAPI\\WheelsAndBillsAPI.csproj",
+              "RelativeDocumentMoniker": "WheelsAndBillsAPI.csproj",
+              "ToolTip": "C:\\Users\\mtutu\\Desktop\\Programming\\Programming\\1. Projects\\10. Minimal Wheels And Bills\\WheelsAndBillsAPI\\WheelsAndBillsAPI.csproj",
+              "RelativeToolTip": "WheelsAndBillsAPI.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-02-03T17:44:38.476Z"
             }
           ]
         }

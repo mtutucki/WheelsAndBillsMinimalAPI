@@ -151,7 +151,6 @@ namespace WheelsAndBills.Application.Features.Events.VehicleEvents
             ev.Mileage = request.Mileage;
             ev.Description = request.Description;
 
-            // Remove existing details to avoid stale data when type changes.
             var fueling = await _db.FuelingEvents
                 .Where(f => f.VehicleEventId == ev.Id)
                 .ToListAsync(cancellationToken);
@@ -253,7 +252,7 @@ namespace WheelsAndBills.Application.Features.Events.VehicleEvents
                     data["parts"] = parts;
             }
 
-            // For status-change events, we don't store historical status; use current status as fallback.
+            // For status-change events, we don't store historical status;
             data ??= new Dictionary<string, object?>();
             data["vehicleStatusId"] = ev.Vehicle.StatusId;
 

@@ -38,7 +38,13 @@ namespace WheelsAndBills.Application.Features.Auth
 
             var result = await _userManager.CreateAsync(user, request.Password);
             if (!result.Succeeded)
-                return ServiceResult<RegisterResult>.Fail("Registration failed");
+            {
+                var errorDetails = string.Join(
+                    " | ",
+                    result.Errors.Select(e => $"{e.Code}:{e.Description}")
+                );
+                return ServiceResult<RegisterResult>.Fail(errorDetails);
+            }
 
             if (await _roleManager.RoleExistsAsync("User"))
             {
