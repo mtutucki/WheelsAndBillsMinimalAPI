@@ -3,10 +3,6 @@
   "WorkspaceRootPath": "C:\\Users\\mtutu\\Desktop\\Programming\\Programming\\1. Projects\\10. Minimal Wheels And Bills\\WheelsAndBillsAPI\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{F30B9F84-D174-4326-8D01-AA96FF8EF3AB}|WheelsAndBillsAPI.csproj|c:\\users\\mtutu\\desktop\\programming\\programming\\1. projects\\10. minimal wheels and bills\\wheelsandbillsapi\\wheelsandbills.application\\features\\reports\\reportqueries\\reportqueriesservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F30B9F84-D174-4326-8D01-AA96FF8EF3AB}|WheelsAndBillsAPI.csproj|solutionrelative:wheelsandbills.application\\features\\reports\\reportqueries\\reportqueriesservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{F30B9F84-D174-4326-8D01-AA96FF8EF3AB}|WheelsAndBillsAPI.csproj|c:\\users\\mtutu\\desktop\\programming\\programming\\1. projects\\10. minimal wheels and bills\\wheelsandbillsapi\\wheelsandbillsapi.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
       "RelativeMoniker": "D:0:0:{F30B9F84-D174-4326-8D01-AA96FF8EF3AB}|WheelsAndBillsAPI.csproj|solutionrelative:wheelsandbillsapi.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     }
@@ -27,27 +23,15 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "ReportQueriesService.cs",
-              "DocumentMoniker": "C:\\Users\\mtutu\\Desktop\\Programming\\Programming\\1. Projects\\10. Minimal Wheels And Bills\\WheelsAndBillsAPI\\WheelsAndBills.Application\\Features\\Reports\\ReportQueries\\ReportQueriesService.cs",
-              "RelativeDocumentMoniker": "WheelsAndBills.Application\\Features\\Reports\\ReportQueries\\ReportQueriesService.cs",
-              "ToolTip": "C:\\Users\\mtutu\\Desktop\\Programming\\Programming\\1. Projects\\10. Minimal Wheels And Bills\\WheelsAndBillsAPI\\WheelsAndBills.Application\\Features\\Reports\\ReportQueries\\ReportQueriesService.cs",
-              "RelativeToolTip": "WheelsAndBills.Application\\Features\\Reports\\ReportQueries\\ReportQueriesService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-23T21:19:27.855Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "WheelsAndBillsAPI.csproj",
+              "Title": "WheelsAndBillsAPI",
               "DocumentMoniker": "C:\\Users\\mtutu\\Desktop\\Programming\\Programming\\1. Projects\\10. Minimal Wheels And Bills\\WheelsAndBillsAPI\\WheelsAndBillsAPI.csproj",
               "RelativeDocumentMoniker": "WheelsAndBillsAPI.csproj",
               "ToolTip": "C:\\Users\\mtutu\\Desktop\\Programming\\Programming\\1. Projects\\10. Minimal Wheels And Bills\\WheelsAndBillsAPI\\WheelsAndBillsAPI.csproj",
               "RelativeToolTip": "WheelsAndBillsAPI.csproj",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2026-02-03T17:44:38.476Z"
+              "WhenOpened": "2026-02-23T22:38:27.154Z",
+              "EditorCaption": ""
             }
           ]
         }

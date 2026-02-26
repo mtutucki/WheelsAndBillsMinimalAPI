@@ -1,12 +1,7 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Users\\mtutu\\Desktop\\Programming\\Programming\\1. Projects\\10. Minimal Wheels And Bills\\WheelsAndBillsAPI\\",
-  "Documents": [
-    {
-      "AbsoluteMoniker": "D:0:0:{0698A25C-E0FD-49E5-9E49-8A1A3194FF00}|WheelsAndBills.Application\\WheelsAndBills.Application.csproj|c:\\users\\mtutu\\desktop\\programming\\programming\\1. projects\\10. minimal wheels and bills\\wheelsandbillsapi\\wheelsandbills.application\\features\\reports\\reportqueries\\reportqueriesservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{0698A25C-E0FD-49E5-9E49-8A1A3194FF00}|WheelsAndBills.Application\\WheelsAndBills.Application.csproj|solutionrelative:wheelsandbills.application\\features\\reports\\reportqueries\\reportqueriesservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    }
-  ],
+  "Documents": [],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -14,24 +9,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": -1,
           "Children": [
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "ReportQueriesService.cs",
-              "DocumentMoniker": "C:\\Users\\mtutu\\Desktop\\Programming\\Programming\\1. Projects\\10. Minimal Wheels And Bills\\WheelsAndBillsAPI\\WheelsAndBills.Application\\Features\\Reports\\ReportQueries\\ReportQueriesService.cs",
-              "RelativeDocumentMoniker": "WheelsAndBills.Application\\Features\\Reports\\ReportQueries\\ReportQueriesService.cs",
-              "ToolTip": "C:\\Users\\mtutu\\Desktop\\Programming\\Programming\\1. Projects\\10. Minimal Wheels And Bills\\WheelsAndBillsAPI\\WheelsAndBills.Application\\Features\\Reports\\ReportQueries\\ReportQueriesService.cs*",
-              "RelativeToolTip": "WheelsAndBills.Application\\Features\\Reports\\ReportQueries\\ReportQueriesService.cs*",
-              "ViewState": "AgIAADwAAAAAAAAAAAD4v0wAAAAaAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-06T19:03:04.67Z",
-              "EditorCaption": ""
             }
           ]
         }

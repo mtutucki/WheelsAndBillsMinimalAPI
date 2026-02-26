@@ -323,7 +323,7 @@ namespace WheelsAndBills.Application.Features.Events.VehicleEvents
                 Id = Guid.NewGuid(),
                 VehicleId = request.VehicleId,
                 EventTypeId = request.EventTypeId,
-                EventDate = request.EventDate.Date,
+                EventDate = request.EventDate,
                 Mileage = request.Mileage,
                 Description = request.Description,
                 CreatedAt = DateTime.Now
